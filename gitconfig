@@ -1,0 +1,14 @@
+[push]
+  default=current
+[color]
+  ui = auto
+[core]
+  excludesfile = ~/.gitignore
+  autocrlf = input
+[merge]
+  ff = only
+[include]
+  path = .gitconfig.local
+[user]
+  name = Alex Berry
+  email = highwaybobbery@gmail.com
