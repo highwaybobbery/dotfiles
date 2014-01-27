@@ -1,5 +1,3 @@
-echo "loaded zshrc"
-
 # adds the current branch name in green
 git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null)
@@ -30,6 +28,12 @@ export HISTSIZE=4096
 
 # prompt
 export PS1='$(git_prompt_info)[${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%~%{$reset_color%}] '
+
+# path
+export PATH="$HOME/.rbenv/bin:$PATH"
+
+# initialize rbenv
+eval "$(rbenv init - zsh)"
 
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
