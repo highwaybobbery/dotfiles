@@ -27,6 +27,8 @@ set backspace=2
 set tabstop=2
 set shiftwidth=2
 set expandtab
+set colorcolumn=80
+set nowrap
 
 " Open new split panes to right and bottom
 set splitbelow
@@ -37,14 +39,38 @@ set list listchars=tab:»·,trail:·
 
 " Numbers
 set number
-set numberwidth=3
+set numberwidth=4
+
+set noswapfile
+set nobackup
+set nowb
+
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L] 
 
 Bundle 'gmarik/vundle'
 " My bundles here:
 Bundle 'kien/ctrlp.vim'
+Bundle 'tpope/vim-fugitive'
+Bundle 'tpope/vim-surround'
+Bundle 'rking/ag.vim'
 Bundle 'scrooloose/nerdtree'
+Bundle 'scrooloose/nerdcommenter'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'thoughtbot/vim-rspec'
+Bundle 'jgdavey/tslime.vim'
+Bundle 'jgdavey/vim-turbux'
+Bundle 'pangloss/vim-javascript'
+Bundle 'kchmck/vim-coffee-script'
+Bundle 'ap/vim-css-color'
+Bundle 'tpope/vim-haml'
+Bundle 'tpope/vim-rails'
+Bundle 'tpope/vim-rake'
+Bundle 'rodjek/vim-puppet'
 " Bundle 'highwaybobbery/vim-tdd-dat-class'
 "Bundle 'file:///Users/alex/projects/vim-tdd-dat-class/'
 
