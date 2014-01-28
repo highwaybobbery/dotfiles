@@ -3,6 +3,14 @@ alias quit="exit"
 alias killswp="rm **/.*.*.sw*"
 alias dotfiles="cd ~/environment/dotfiles/ && vim ."
 
+# changes dierectory and opens it in vim
+cdAndVim() {
+  cd $1
+  vim $1
+}
+
+alias vcd=cdAndVim
+
 # git
 alias g="git"
 alias gl="git log"

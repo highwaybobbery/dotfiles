@@ -1,9 +1,26 @@
 set nocompatible              " be iMproved
 filetype off                  " required!
-let mapleader = " "
+let mapleader = "t"
 
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
+
+autocmd! bufwritepost .vimrc source %
+
+noremap <leader>d dd
+noremap <leader>p :set paste<CR>
+
+map <Leader>t :call RunCurrentSpecFile()<CR>
+map <Leader>l :call RunLastSpec()<CR>
+map <leader>cd :cd %:p:h<CR>
+map <leader>dd :call TddDatClass()<CR>
+
+function! TddDatClass()
+  let className = expand('%:t')
+  let directory = expand('%:p:h')
+  let root = getcwd()
+  echo 'file:' . className . ' directory:' . directory . ' root:' . root
+endfunction
 
 " Softtabs, 2 spaces
 set backspace=2
@@ -27,6 +44,9 @@ Bundle 'gmarik/vundle'
 Bundle 'kien/ctrlp.vim'
 Bundle 'scrooloose/nerdtree'
 Bundle 'altercation/vim-colors-solarized'
+Bundle 'thoughtbot/vim-rspec'
+" Bundle 'highwaybobbery/vim-tdd-dat-class'
+"Bundle 'file:///Users/alex/projects/vim-tdd-dat-class/'
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
