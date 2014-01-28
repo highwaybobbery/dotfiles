@@ -1,5 +1,6 @@
 alias v="vim"
 alias quit="exit"
+alias :q="exit"
 alias killswp="rm **/.*.*.sw*"
 alias dotfiles="cd ~/environment/dotfiles/ && vim ."
 

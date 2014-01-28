@@ -10,6 +10,10 @@ git_prompt_info() {
 autoload -U colors
 colors
 
+# completion!
+autoload -U compinit
+compinit
+
 # enable colored output from ls, etc
 export CLICOLOR=1
 
