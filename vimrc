@@ -7,12 +7,15 @@ call vundle#rc()
 
 autocmd! bufwritepost .vimrc source %
 
-noremap <leader>d dd
+" noremap <leader>d dd
 noremap <leader>p :set paste<CR>
-
+noremap <leader><space> :noh<return><esc>
+noremap , /
 map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>l :call RunLastSpec()<CR>
 map <leader>cd :cd %:p:h<CR>
+map <leader>a :tabprevious<CR>
+map <leader>; :tabnext<CR>
 map <leader>dd :call TddDatClass()<CR>
 
 function! TddDatClass()
@@ -50,7 +53,7 @@ set incsearch
 set ignorecase
 set smartcase
 
-set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [ASCII=\%03.3b]\ [HEX=\%02.2B]\ [POS=%04l,%04v][%p%%]\ [LEN=%L] 
+set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ \ [POS=%04l,%04v][%p%%]\ [LEN=%L] 
 
 Bundle 'gmarik/vundle'
 " My bundles here:
@@ -62,8 +65,8 @@ Bundle 'scrooloose/nerdtree'
 Bundle 'scrooloose/nerdcommenter'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'thoughtbot/vim-rspec'
-Bundle 'jgdavey/tslime.vim'
-Bundle 'jgdavey/vim-turbux'
+"Bundle 'jgdavey/tslime.vim'
+"Bundle 'jgdavey/vim-turbux'
 Bundle 'pangloss/vim-javascript'
 Bundle 'kchmck/vim-coffee-script'
 Bundle 'ap/vim-css-color'
@@ -73,6 +76,8 @@ Bundle 'tpope/vim-rake'
 Bundle 'rodjek/vim-puppet'
 " Bundle 'highwaybobbery/vim-tdd-dat-class'
 "Bundle 'file:///Users/alex/projects/vim-tdd-dat-class/'
+
+let g:rspec_command = "!bundle exec rspec --drb {spec}"
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
