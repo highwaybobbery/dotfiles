@@ -39,6 +39,10 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 # initialize rbenv
 eval "$(rbenv init - zsh)"
 
+# fuzzy finder
+source $HOME/.zsh-fuzzy-match/fuzzy-match.zsh
+bindkey ^P fuzzy-match
+
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
 

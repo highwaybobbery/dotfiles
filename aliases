@@ -4,6 +4,9 @@ alias :q="exit"
 alias killswp="rm **/.*.*.sw*"
 alias dotfiles="cd ~/environment/dotfiles/ && vim ."
 
+alias spec="bundle exec rspec"
+alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"
+
 # changes dierectory and opens it in vim
 cdAndVim() {
   cd $1

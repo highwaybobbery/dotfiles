@@ -17,6 +17,13 @@ map <leader>cd :cd %:p:h<CR>
 map <leader>a :tabprevious<CR>
 map <leader>; :tabnext<CR>
 map <leader>dd :call TddDatClass()<CR>
+map <leader>b :NERDTreeToggle<CR>
+map <leader>vv :tabe ~/.vimrc<CR>
+
+nnoremap <silent> <C-l> <c-w>l
+nnoremap <silent> <C-h> <c-w>h
+nnoremap <silent> <C-k> <c-w>k
+nnoremap <silent> <C-j> <c-w>j
 
 function! TddDatClass()
   let className = expand('%:t')
@@ -24,6 +31,11 @@ function! TddDatClass()
   let root = getcwd()
   echo 'file:' . className . ' directory:' . directory . ' root:' . root
 endfunction
+
+" folding
+set foldmethod=syntax
+set nofoldenable
+noremap <SPACE> za
 
 " Softtabs, 2 spaces
 set backspace=2
@@ -74,6 +86,7 @@ Bundle 'tpope/vim-haml'
 Bundle 'tpope/vim-rails'
 Bundle 'tpope/vim-rake'
 Bundle 'rodjek/vim-puppet'
+Bundle 'christoomey/vim-tmux-navigator'
 " Bundle 'highwaybobbery/vim-tdd-dat-class'
 "Bundle 'file:///Users/alex/projects/vim-tdd-dat-class/'
 
@@ -111,3 +124,5 @@ if filereadable($HOME . "/.vimrc.local")
   source ~/.vimrc.local
 endif
 
+" auto source vimrc on save
+autocmd! bufwritepost .vimrc source %
