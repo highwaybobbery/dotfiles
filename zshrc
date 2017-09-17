@@ -34,9 +34,11 @@ export HISTSIZE=4096
 export PS1='$(git_prompt_info)[${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[blue]%}%~%{$reset_color%}] '
 
 # path
-export PATH="$HOME/.rbenv/bin:$PATH"
+export GOPATH="$HOME/projects/go"
+export GOBIN="$GOPATH/bin"
+export PATH="$HOME/.rbenv/bin:$PATH:$(go env GOPATH)/bin"
 
-# initialize rbenv
+#initialize rbenv
 eval "$(rbenv init - zsh)"
 
 # fuzzy finder
@@ -48,3 +50,5 @@ bindkey ^P fuzzy-match
 
 # Local config
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+export PGDATA=/usr/local/var/postgres
+export PGHOST=/tmp
