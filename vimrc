@@ -2,8 +2,6 @@ set nocompatible              " be iMproved
 filetype off                  " required!
 let mapleader = "t"
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
 
 autocmd! bufwritepost .vimrc source %
 
@@ -16,21 +14,12 @@ map <Leader>l :call RunLastSpec()<CR>
 map <leader>cd :cd %:p:h<CR>
 map <leader>a :tabprevious<CR>
 map <leader>; :tabnext<CR>
-map <leader>dd :call TddDatClass()<CR>
 map <leader>b :NERDTreeToggle<CR>
-map <leader>vv :tabe ~/.vimrc<CR>
 
 nnoremap <silent> <C-l> <c-w>l
 nnoremap <silent> <C-h> <c-w>h
 nnoremap <silent> <C-k> <c-w>k
 nnoremap <silent> <C-j> <c-w>j
-
-function! TddDatClass()
-  let className = expand('%:t')
-  let directory = expand('%:p:h')
-  let root = getcwd()
-  echo 'file:' . className . ' directory:' . directory . ' root:' . root
-endfunction
 
 " folding
 set foldmethod=syntax
@@ -67,28 +56,29 @@ set smartcase
 
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ \ [POS=%04l,%04v][%p%%]\ [LEN=%L] 
 
-Bundle 'gmarik/vundle'
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+Plugin 'VungleVim/Vundle.vim'
 " My bundles here:
-Bundle 'kien/ctrlp.vim'
-Bundle 'tpope/vim-fugitive'
-Bundle 'tpope/vim-surround'
-Bundle 'rking/ag.vim'
-Bundle 'scrooloose/nerdtree'
-Bundle 'scrooloose/nerdcommenter'
-Bundle 'altercation/vim-colors-solarized'
-Bundle 'thoughtbot/vim-rspec'
-"Bundle 'jgdavey/tslime.vim'
-"Bundle 'jgdavey/vim-turbux'
-Bundle 'pangloss/vim-javascript'
-Bundle 'kchmck/vim-coffee-script'
-Bundle 'ap/vim-css-color'
-Bundle 'tpope/vim-haml'
-Bundle 'tpope/vim-rails'
-Bundle 'tpope/vim-rake'
-Bundle 'rodjek/vim-puppet'
-Bundle 'christoomey/vim-tmux-navigator'
-" Bundle 'highwaybobbery/vim-tdd-dat-class'
-"Bundle 'file:///Users/alex/projects/vim-tdd-dat-class/'
+Plugin 'kien/ctrlp.vim'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-surround'
+Plugin 'rking/ag.vim'
+Plugin 'scrooloose/nerdtree'
+Plugin 'scrooloose/nerdcommenter'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'thoughtbot/vim-rspec'
+"Plugin 'jgdavey/tslime.vim'
+"Plugin 'jgdavey/vim-turbux'
+Plugin 'pangloss/vim-javascript'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'ap/vim-css-color'
+Plugin 'tpope/vim-haml'
+Plugin 'tpope/vim-rails'
+Plugin 'tpope/vim-rake'
+Plugin 'rodjek/vim-puppet'
+Plugin 'christoomey/vim-tmux-navigator'
 
 let g:rspec_command = "!bundle exec rspec --drb {spec}"
 
@@ -98,6 +88,7 @@ if (&t_Co > 2 || has("gui_running")) && !exists("syntax_on")
   syntax on
 endif
 
+call vundle#end()
 filetype plugin indent on     " required for vundle
 
 " Use The Silver Searcher https://github.com/ggreer/the_silver_searcher
@@ -116,8 +107,6 @@ endif
 let g:solarized_termcolors=256
 set background=dark
 colorscheme solarized
-highlight NonText guibg=#060606
-highlight Folded  guibg=#0A0A0A guifg=#9090D0
 
 " Local config
 if filereadable($HOME . "/.vimrc.local")

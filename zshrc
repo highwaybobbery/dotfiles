@@ -36,14 +36,11 @@ export PS1='$(git_prompt_info)[${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$f
 # path
 export GOPATH="$HOME/projects/go"
 export GOBIN="$GOPATH/bin"
-export PATH="$HOME/.rbenv/bin:$PATH:$(go env GOPATH)/bin"
+
+export PATH="$HOME/.rbenv/bin:$PATH" # :$(go env GOPATH)/bin" # uncomment if go installed
 
 #initialize rbenv
 eval "$(rbenv init - zsh)"
-
-# fuzzy finder
-source $HOME/.zsh-fuzzy-match/fuzzy-match.zsh
-bindkey ^P fuzzy-match
 
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
