@@ -6,9 +6,11 @@
   excludesfile = ~/.gitignore_global
   autocrlf = input
 [merge]
-  ff = only
+  ff = allow
 [include]
   path = .gitconfig.local
 [user]
   name = Alex Berry
-  email = highwaybobbery@gmail.com
+	email = aberry@constantcontact.com
+	name = =
+	name = =

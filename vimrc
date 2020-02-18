@@ -9,8 +9,6 @@ autocmd! bufwritepost .vimrc source %
 noremap <leader>p :set paste<CR>
 noremap <leader><space> :noh<return><esc>
 noremap , /
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>l :call RunLastSpec()<CR>
 map <leader>cd :cd %:p:h<CR>
 map <leader>a :tabprevious<CR>
 map <leader>; :tabnext<CR>
@@ -24,7 +22,13 @@ nnoremap <silent> <C-j> <c-w>j
 " folding
 set foldmethod=syntax
 set nofoldenable
-noremap <SPACE> za
+" noremap <C-Space> <C-x><C-o>
+" noremap <C-@> <C-Space>
+" noremap <SPACE> za
+" noremap <C-SPACE> zO
+
+" Allow project specific vimrc
+set exrc
 
 " Softtabs, 2 spaces
 set backspace=2
@@ -105,7 +109,7 @@ endif
 
 " Color scheme
 let g:solarized_termcolors=256
-set background=dark
+set background=light
 colorscheme solarized
 
 " Local config
@@ -115,3 +119,4 @@ endif
 
 " auto source vimrc on save
 autocmd! bufwritepost .vimrc source %
+set secure

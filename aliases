@@ -3,6 +3,7 @@ alias quit="exit"
 alias :q="exit"
 alias killswp="rm **/.*.*.sw*"
 alias dotfiles="cd ~/environment/dotfiles/ && vim ."
+alias projects="cd ~/projects"
 
 alias spec="bundle exec rspec"
 alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"
@@ -14,6 +15,8 @@ cdAndVim() {
 }
 
 alias vcd=cdAndVim
+alias brake="bundle exec rake"
+alias braketest="RAILS_ENV=test bundle exec rake"
 
 # git
 alias g="git"
