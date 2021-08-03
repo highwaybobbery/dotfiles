@@ -1,5 +1,6 @@
 alias v="vim"
 alias quit="exit"
+alias home="cd ~/"
 alias :q="exit"
 alias killswp="rm **/.*.*.sw*"
 alias dotfiles="cd ~/environment/dotfiles/ && vim ."
@@ -21,13 +22,7 @@ alias braketest="RAILS_ENV=test bundle exec rake"
 # git
 alias g="git"
 alias gl="git log"
-alias gbl="git branch"
-alias gbd="git branch -d"
-alias gbD="git branch -D"
-alias gupi="git fetch upstream && git rebase -i upstream/local"
 alias gs="git status"
-alias stash="git stash"
-alias pop="git stash pop"
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local

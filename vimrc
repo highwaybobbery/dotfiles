@@ -63,7 +63,7 @@ set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ \ [POS=%04l,%04v][%p%%]\ [LEN=%L]
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
-Plugin 'VungleVim/Vundle.vim'
+Plugin 'VundleVim/Vundle.vim'
 " My bundles here:
 Plugin 'kien/ctrlp.vim'
 Plugin 'tpope/vim-fugitive'
