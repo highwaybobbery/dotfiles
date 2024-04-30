@@ -5,12 +5,11 @@
 [core]
   excludesfile = ~/.gitignore_global
   autocrlf = input
+	editor = Nvim
 [merge]
   ff = allow
 [include]
   path = .gitconfig.local
 [user]
   name = Alex Berry
-	email = aberry@constantcontact.com
-	name = =
-	name = =
+  email = highwaybobbery@gmail.com

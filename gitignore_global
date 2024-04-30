@@ -1,3 +1,5 @@
 .*.sw*
 .vimrc
+.idea*
+.DS_Store
 /abnotes

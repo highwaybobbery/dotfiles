@@ -1,10 +1,14 @@
 # adds the current branch name in green
-git_prompt_info() {
-  ref=$(git symbolic-ref HEAD 2> /dev/null)
-  if [[ -n $ref ]]; then
-    echo "[%{$fg_bold[green]%}${ref#refs/heads/}%{$reset_color%}]"
-  fi
-}
+
+
+if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
+  git_prompt_info() {
+    ref=$(git symbolic-ref HEAD 2> /dev/null)
+    if [[ -n $ref ]]; then
+      echo "[%{$fg_bold[green]%}${ref#refs/heads/}%{$reset_color%}]"
+    fi
+  }
+fi
 
 # makes color constants available
 autoload -U colors
@@ -37,11 +41,8 @@ export PS1='$(git_prompt_info)[${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$f
 export GOPATH="$HOME/projects/go"
 export GOBIN="$GOPATH/bin"
 
-export PATH="$HOME/.rbenv/bin:$PATH" # :$(go env GOPATH)/bin" # uncomment if go installed
 
-#initialize rbenv
-eval "$(rbenv init - zsh)"
-
+echo gothere
 # aliases
 [[ -f ~/.aliases ]] && source ~/.aliases
 
@@ -49,3 +50,8 @@ eval "$(rbenv init - zsh)"
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 export PGDATA=/usr/local/var/postgres
 export PGHOST=/tmp
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+setopt AUTO_CD
+setopt SHARE_HISTORY

@@ -1,10 +1,14 @@
-alias v="vim"
-alias quit="exit"
-alias home="cd ~/"
+alias v="nvim -p"
+alias q="exit"
+alias h="cd ~/"
+alias p="cd ~/Projects/"
+alias b="cd ~/Personal\ Brain/"
+
 alias :q="exit"
-alias killswp="rm **/.*.*.sw*"
-alias dotfiles="cd ~/environment/dotfiles/ && vim ."
-alias projects="cd ~/projects"
+alias dotfiles="cd ~/environment/dotfiles/ && v ."
+
+alias source-aliases='source ~/.aliases'
+alias aliases.local="cat ~/.aliases.local"
 
 alias spec="bundle exec rspec"
 alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"
@@ -23,6 +27,7 @@ alias braketest="RAILS_ENV=test bundle exec rake"
 alias g="git"
 alias gl="git log"
 alias gs="git status"
+alias gco="git checkout"
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local

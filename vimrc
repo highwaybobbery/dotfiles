@@ -36,6 +36,8 @@ set tabstop=2
 set shiftwidth=2
 set expandtab
 set colorcolumn=80
+highlight ColorColumn
+
 set nowrap
 
 " Open new split panes to right and bottom
@@ -84,7 +86,6 @@ Plugin 'tpope/vim-rake'
 Plugin 'rodjek/vim-puppet'
 Plugin 'christoomey/vim-tmux-navigator'
 
-let g:rspec_command = "!bundle exec rspec --drb {spec}"
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
@@ -108,9 +109,9 @@ if executable('ag')
 endif
 
 " Color scheme
-let g:solarized_termcolors=256
-set background=light
-colorscheme solarized
+" let g:solarized_termcolors=256
+" set background=light
+" colorscheme solarized
 
 " Local config
 if filereadable($HOME . "/.vimrc.local")
