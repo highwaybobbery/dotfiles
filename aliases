@@ -5,7 +5,7 @@ alias p="cd ~/Projects/"
 alias b="cd ~/Personal\ Brain/"
 
 alias :q="exit"
-alias dotfiles="cd ~/environment/dotfiles/ && v ."
+alias dotfiles="cd ~/Environment/dotfiles/"
 
 alias source-aliases='source ~/.aliases'
 alias aliases.local="cat ~/.aliases.local"

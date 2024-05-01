@@ -8,8 +8,8 @@
 	editor = Nvim
 [merge]
   ff = allow
-[include]
-  path = .gitconfig.local
 [user]
   name = Alex Berry
   email = highwaybobbery@gmail.com
+[include]
+  path = .gitconfig.local
