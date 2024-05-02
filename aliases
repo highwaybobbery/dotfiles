@@ -3,6 +3,7 @@ alias q="exit"
 alias h="cd ~/"
 alias p="cd ~/Projects/"
 alias b="cd ~/Personal\ Brain/"
+alias nvc="cd ~/.config/nvim && v"
 
 alias :q="exit"
 alias dotfiles="cd ~/Environment/dotfiles/"

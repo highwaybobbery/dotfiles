@@ -8,8 +8,8 @@ end
 Options.setup = function(opts)
   opts = opts or {}
 
-  vim.g.loaded_netrw = 1
-  vim.g.loaded_netrwPlugin = 1
+  -- vim.g.loaded_netrw = 1
+  -- vim.g.loaded_netrwPlugin = 1
 
   vim.opt.backspace = '2'
   vim.opt.backup = false
