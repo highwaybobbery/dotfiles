@@ -1,11 +1,11 @@
 ---@class CustomModule
-local Bindings = {}
+local Bindings = {
 
-Bindings.setup_early = function(opts)
+setup_early = function(_opts)
   vim.g.mapleader = ' '
-end
+end,
 
-Bindings.setup_late = function(opts)
+setup_late = function(opts)
   vim.keymap.set('n', '<C-l>', '<c-w>l', { noremap=true, silent=true })
   vim.keymap.set('n', '<C-h>', '<c-w>h', { noremap=true, silent=true })
   vim.keymap.set('n', '<C-k>', '<c-w>k', { noremap=true, silent=true })
@@ -41,7 +41,11 @@ Bindings.setup_late = function(opts)
   vim.keymap.set("n", "<C-l>", "<Cmd>NvimTmuxNavigateRight<CR>", { silent = true })
   vim.keymap.set("n", "<C-\\>", "<Cmd>NvimTmuxNavigateLastActive<CR>", { silent = true })
   vim.keymap.set("n", "<C-Space>", "<Cmd>NvimTmuxNavigateNavigateNext<CR>", { silent = true })
-  
+
+  -- LSP
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, {})
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, {})
 end
 
-return Bindings 
+}
+return Bindings
