@@ -6,6 +6,7 @@
   excludesfile = ~/.gitignore_global
   autocrlf = input
 	editor = Nvim
+  pager = cat
 [merge]
   ff = allow
 [user]

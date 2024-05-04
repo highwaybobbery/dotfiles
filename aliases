@@ -14,13 +14,6 @@ alias aliases.local="cat ~/.aliases.local"
 alias spec="bundle exec rspec"
 alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"
 
-# changes dierectory and opens it in vim
-cdAndVim() {
-  cd $1
-  vim $1
-}
-
-alias vcd=cdAndVim
 alias brake="bundle exec rake"
 alias braketest="RAILS_ENV=test bundle exec rake"
 
