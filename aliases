@@ -8,8 +8,8 @@ alias nvc="cd ~/.config/nvim && v"
 alias :q="exit"
 alias dotfiles="cd ~/Environment/dotfiles/"
 
-alias source-aliases='source ~/.aliases'
 alias aliases.local="cat ~/.aliases.local"
+alias aliases="cat ~/.aliases"
 
 alias spec="bundle exec rspec"
 alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"

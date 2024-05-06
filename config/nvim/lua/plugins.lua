@@ -3,7 +3,42 @@ return {
   {
     'nvim-telescope/telescope.nvim',
     tag = '0.1.5',
-    dependencies = { 'nvim-lua/plenary.nvim' }
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    config = function()
+      local telescope = require("telescope")
+      local telescopeConfig = require("telescope.config")
+
+      telescope.load_extension("ag")
+
+      -- Clone the default Telescope configuration
+      local vimgrep_arguments = { unpack(telescopeConfig.values.vimgrep_arguments) }
+
+      -- I want to search in hidden/dot files.
+      table.insert(vimgrep_arguments, "--hidden")
+      -- I don't want to search in the `.git` directory.
+      -- table.insert(vimgrep_arguments, "--glob")
+      -- table.insert(vimgrep_arguments, "!**/.git/*")
+      -- table.insert(vimgrep_arguments, "!**/sorbet/*")
+
+      telescope.setup({
+        defaults = {
+          -- `hidden = true` is not supported in text grep commands.
+          vimgrep_arguments = vimgrep_arguments,
+        },
+        pickers = {
+          find_files = {
+            -- `hidden = true` will still show the inside of `.git/` as it's not `.gitignore`d.
+            find_command = { "rg", "--files", "--hidden" },
+          },
+        },
+      })
+    end
+  },
+  {
+    "kelly-lin/telescope-ag",
+    dependencies = { "nvim-telescope/telescope.nvim" },
   },
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
   {
@@ -20,6 +55,17 @@ return {
         },
       },
     },
+  },
+  {
+    'RRethy/nvim-treesitter-endwise',
+    config = function()
+      require('nvim-treesitter-endwise')
+      require('nvim-treesitter.configs').setup {
+        endwise = {
+          enable = true,
+        },
+      }
+    end,
   },
   {
     'nvim-telescope/telescope-ui-select.nvim',
@@ -95,54 +141,99 @@ return {
       -- refer to the configuration section below
     }
   },
+
+  {'williamboman/mason.nvim'},
+  {'williamboman/mason-lspconfig.nvim'},
   {
-    "williamboman/mason.nvim",
+    'VonHeikemen/lsp-zero.nvim', branch = 'v3.x',
+
     config = function()
-      require("mason").setup()
-    end
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    config = function()
-      require ("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "tsserver", "ruby_lsp" }
+      ---
+      -- LSP setup
+      ---
+      local lsp_zero = require('lsp-zero')
+
+      lsp_zero.on_attach(function(client, bufnr)
+        -- see :help lsp-zero-keybindings
+        -- to learn the available actions
+        lsp_zero.default_keymaps({buffer = bufnr})
+      end)
+
+      --- if you want to know more about lsp-zero and mason.nvim
+      --- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guide/integrate-with-mason-nvim.md
+      require('mason').setup({})
+      require('mason-lspconfig').setup({
+        handlers = {
+          function(server_name)
+            require('lspconfig')[server_name].setup({})
+          end,
+          lua_ls = function()
+            -- (Optional) configure lua language server
+            local lua_opts = lsp_zero.nvim_lua_ls()
+            require('lspconfig').lua_ls.setup(lua_opts)
+          end,
+        }
+      })
+
+      ---
+      -- Autocompletion config
+      ---
+      local cmp = require('cmp')
+      local cmp_action = lsp_zero.cmp_action()
+
+      cmp.setup({
+        mapping = cmp.mapping.preset.insert({
+          -- `Enter` key to confirm completion
+          ['<CR>'] = cmp.mapping.confirm({select = false}),
+
+          -- Ctrl+Space to trigger completion menu
+          ['<C-Space>'] = cmp.mapping.complete(),
+
+          -- Navigate between snippet placeholder
+          ['<C-f>'] = cmp_action.luasnip_jump_forward(),
+          ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+
+          -- Scroll up and down in the completion documentation
+          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-d>'] = cmp.mapping.scroll_docs(4),
+        }),
+        snippet = {
+          expand = function(args)
+            require('luasnip').lsp_expand(args.body)
+          end,
+        },
       })
     end
   },
+  {'neovim/nvim-lspconfig'},
+  {'hrsh7th/cmp-nvim-lsp'},
+  {'hrsh7th/nvim-cmp'},
+  {'L3MON4D3/LuaSnip'},
   {
-    "neovim/nvim-lspconfig",
+    'rgroli/other.nvim',
     config = function()
-      local lspconfig = require('lspconfig')
-
-      lspconfig.lua_ls.setup {
-        settings = {
-          Lua = {
-            runtime = {
-              -- Tell the language server which version of Lua you're using
-              -- (most likely LuaJIT in the case of Neovim)
-              version = 'LuaJIT',
-            },
-            diagnostics = {
-              -- Get the language server to recognize the `vim` global
-              globals = {
-                'vim',
-                'require'
-              },
-            },
-            workspace = {
-              -- Make the server aware of Neovim runtime files
-              library = vim.api.nvim_get_runtime_file("", true),
-            },
-            -- Do not send telemetry data containing a randomized but unique identifier
-            telemetry = {
-              enable = false,
-            },
-          },
+      require("other-nvim").setup({
+        mappings = {
+          "angular",
+          "rails",
         },
-      }
+        style = {
+          -- How the plugin paints its window borders
+          -- Allowed values are none, single, double, rounded, solid and shadow
+          border = "solid",
 
-      lspconfig.tsserver.setup({})
-      lspconfig.ruby_lsp.setup({})
+          -- Column seperator for the window
+          seperator = "|",
+
+          -- width of the window in percent. e.g. 0.5 is 50%, 1.0 is 100%
+          width = 0.7,
+
+          -- min height in rows.
+          -- when more columns are needed this value is extended automatically
+          minHeight = 2
+        },
+      })
     end
-  },
+  }
+
 }

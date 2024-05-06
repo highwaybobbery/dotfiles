@@ -119,4 +119,10 @@ export NVM_DIR="$HOME/.nvm"
 # Load Angular CLI autocompletion.
 source <(ng completion script)
 
+srcdots () {
+  for file in '.zshrc' '.aliases'
+  do
+    source "$HOME/$file"
+  done
+}
 

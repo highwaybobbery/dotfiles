@@ -2,7 +2,7 @@
 
 require('options').setup()
 local bindings = require('bindings')
-bindings.setup_early({})
+bindings.setup_early()
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -19,8 +19,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
 
-local telescope_builtin = require("telescope.builtin")
-
 local config = require("nvim-treesitter.configs")
 config.setup({
   ensure_installed = {"lua", "javascript", "typescript", "ruby", "python"},
@@ -33,4 +31,4 @@ vim.cmd.colorscheme "catppuccin"
 
 require('Comment').setup()
 
-bindings.setup_late({telescope_builtin = telescope_builtin})
+bindings.setup_late()
