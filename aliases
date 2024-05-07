@@ -5,13 +5,14 @@ alias p="cd ~/Projects/"
 alias b="cd ~/Personal\ Brain/"
 alias nvc="cd ~/.config/nvim && v"
 
+# srcdots cmd from zshrc, sources all dotfiles~
+alias srcaliases="source ~/.aliases"
 alias :q="exit"
 alias dotfiles="cd ~/Environment/dotfiles/"
 
-alias aliases.local="cat ~/.aliases.local"
-alias aliases="cat ~/.aliases"
+alias aliases="cat ~/.aliases ~/.aliases.local"
 
-alias spec="bundle exec rspec"
+alias spec="bundle exec rspec -fd"
 alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"
 
 alias brake="bundle exec rake"
@@ -22,6 +23,13 @@ alias g="git"
 alias gl="git log"
 alias gs="git status"
 alias gco="git checkout"
+
+# tmux
+alias tmru="tmux resize-pane -U"
+alias tmrd="tmux resize-pane -D"
+alias tmrl="tmux resize-pane -L"
+alias tmrr="tmux resize-pane -R"
+
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local

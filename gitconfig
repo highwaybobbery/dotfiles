@@ -14,3 +14,8 @@
   email = highwaybobbery@gmail.com
 [include]
   path = .gitconfig.local
+[pull]
+	ff = only
+[alias]
+	diffup = diff @{upstream}
+	diffmast = diff origin/master

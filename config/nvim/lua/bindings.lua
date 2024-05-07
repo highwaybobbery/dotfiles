@@ -50,8 +50,14 @@ local Bindings = {
     vim.api.nvim_set_keymap("n", "<leader>ov", "<cmd>:OtherVSplit<CR>", { noremap = true, silent = true })
     vim.api.nvim_set_keymap("n", "<leader>oc", "<cmd>:OtherClear<CR>", { noremap = true, silent = true })
     -- Context specific bindings
-    -- vim.api.nvim_set_keymap("n", "<leader>ls", "<cmd>:Other scss<CR>", { noremap = true, silent = true })
 
+    -- fugitive
+    vim.api.nvim_set_keymap("n", "<leader>gg", ":Git<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>ga", ":Git add %:p<cr><cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>gd", ":Gdiff<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>ge", ":Gedit<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>gw", ":Gwrite<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>gf", ":Commits<cr>", {silent = true})
   end
 }
 return Bindings

@@ -1,5 +1,16 @@
 return {
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  -- { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  {
+    "neanias/everforest-nvim",
+    version = false,
+    lazy = false,
+    priority = 1000,
+    config = function ()
+      require("everforest").setup({
+        background = "hard"
+      })
+    end
+  },
   {
     'nvim-telescope/telescope.nvim',
     tag = '0.1.5',
@@ -89,8 +100,8 @@ return {
   },
   {
     "nvim-neotest/neotest",
-    lazy = true,
     dependencies = {
+      "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
       "antoinemadec/FixCursorHold.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -104,9 +115,12 @@ return {
       })
     end
   },
-  { 'tpope/vim-fugitive' },
-  { 'tpope/vim-rails' },
-  { 'tpope/vim-dispatch' },
+  {
+    'tpope/vim-fugitive',
+    lazy = false,
+  },
+  -- { 'tpope/vim-rails' },
+  -- { 'tpope/vim-dispatch' },
   { 'echasnovski/mini.surround', version = '*' },
   { 'echasnovski/mini.align', version = '*' },
   {
