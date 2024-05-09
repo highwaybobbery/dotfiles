@@ -39,8 +39,13 @@ local Bindings = {
     vim.keymap.set("n", "<C-Space>", "<Cmd>NvimTmuxNavigateNavigateNext<CR>", { silent = true })
 
     -- LSP
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {})
-    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, {})
+    vim.keymap.set('n', '<leader>kh', vim.lsp.buf.hover, {desc="LSP Hover" })
+    vim.keymap.set('n', '<leader>ka', vim.lsp.buf.code_action, { desc="LSP Code Actions" })
+    vim.keymap.set('n', '<leader>ki', vim.lsp.buf.implementation, { desc="LSP Implementation" })
+    vim.keymap.set('n', '<leader>kci', vim.lsp.buf.incoming_calls, { desc="LSP Incoming Calls"})
+    vim.keymap.set('n', '<leader>kco', vim.lsp.buf.outgoing_calls, { desc="LSP Outgoing Calls" })
+    vim.keymap.set('n', '<leader>krf', vim.lsp.buf.references, { desc="LSP References" })
+    vim.keymap.set('n', '<leader>krn', vim.lsp.buf.rename, { desc = "LSP Rename" })
 
     -- Other
     vim.api.nvim_set_keymap("n", "<leader>o", "<cmd>:Other<CR>", { noremap = true, silent = true })

@@ -8,9 +8,11 @@ alias nvc="cd ~/.config/nvim && v"
 # srcdots cmd from zshrc, sources all dotfiles~
 alias srcaliases="source ~/.aliases"
 alias :q="exit"
+alias quit="exit"
 alias dotfiles="cd ~/Environment/dotfiles/"
 
 alias aliases="cat ~/.aliases ~/.aliases.local"
+alias gitaliases="cat ~/.gitconfig ~/.gitconfig.local"
 
 alias spec="bundle exec rspec -fd"
 alias insechrome="open /Applications/Google\ Chrome.app --args -allow-running-insecure-content"

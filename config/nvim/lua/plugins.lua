@@ -52,6 +52,7 @@ return {
     dependencies = { "nvim-telescope/telescope.nvim" },
   },
   { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  { "nvim-treesitter/nvim-treesitter-context" },
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -61,11 +62,16 @@ return {
       "MunifTanjim/nui.nvim",
       -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information },
       config = {
-        filesystem = {
-          hijack_netrw_behavior = "open_default",
-        },
       },
     },
+    config = function ()
+      require("neo-tree").setup({
+        filesystem = {
+          hijack_netrw_behavior = "open_default",
+          follow_current_file = { enabled = true },
+        },
+      })
+    end
   },
   {
     'RRethy/nvim-treesitter-endwise',
