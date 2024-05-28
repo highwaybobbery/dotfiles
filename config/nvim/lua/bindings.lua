@@ -17,8 +17,9 @@ local Bindings = {
     --vim.keymap.set('n', ',', '/', { noremap=true })
 
     -- NeoTree 
-    vim.keymap.set('n', '<leader>tt', '<Cmd>Neotree toggle left<CR>', { noremap=true, desc="Toggle File Tree" })
+    vim.keymap.set('n', '<leader>tt', '<Cmd>Neotree source=filesystem toggle left<CR>', { noremap=true, desc="Toggle File Tree" })
     vim.keymap.set('n', '<leader>tb', '<Cmd>Neotree source=buffers toggle left<CR>', { noremap=true, desc="Toggle Buffer List" })
+    vim.keymap.set('n', '<leader>tg', '<Cmd>Neotree source=git_status toggle left<CR>', { noremap=true, desc="Toggle Git Status" })
 
     -- Telescope
     local builtin = require("telescope.builtin")
