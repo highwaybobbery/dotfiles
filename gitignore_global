@@ -3,5 +3,7 @@
 .idea*
 .DS_Store
 /abnotes
+/ab_notes
 .solargraph.yml
 .ignore
+

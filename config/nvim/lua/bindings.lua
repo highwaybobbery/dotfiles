@@ -10,6 +10,8 @@ local Bindings = {
     vim.keymap.set('n', '<C-k>', '<c-w>k', { noremap=true, silent=true })
     vim.keymap.set('n', '<C-j>', '<c-w>j', { noremap=true, silent=true })
 
+    vim.keymap.set('v', '<C-r>', "hy:%s/<C-r>h//gc<left><left><left>", { noremap=true })
+
 
     vim.keymap.set('n', '<C-p>', ':set past<cr>', { noremap=true })
     vim.keymap.set('n', '<leader><space>', ':noh<return><esc>', { noremap=true })

@@ -18,8 +18,11 @@
 	ff = only
 [alias]
 	co = checkout
+  commend = commit --amend --no-edit
+  commendall = commit -a --amend --no-edit
 	diffup = diff @{upstream}
 	diffmast = diff origin/master
+  pfwl = push --force-with-lease
 	resetuphard = reset --hard @{upstream}
 	resetmasthard = reset --hard origin/master
   rebaseup = rebase -i @{upstream}
