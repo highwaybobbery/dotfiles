@@ -25,6 +25,8 @@
   pfwl = push --force-with-lease
 	resetuphard = reset --hard @{upstream}
 	resetmasthard = reset --hard origin/master
+  resetlast = reset HEAD~1
   rebaseup = rebase -i @{upstream}
   rebasemast = rebase -i origin/master
   logtopcommits = log --oneline -n 20
+  logmasterdiff = log origin/master.. --oneline
