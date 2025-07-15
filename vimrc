@@ -19,13 +19,6 @@ nnoremap <silent> <C-h> <c-w>h
 nnoremap <silent> <C-k> <c-w>k
 nnoremap <silent> <C-j> <c-w>j
 
-" folding
-set foldmethod=syntax
-set nofoldenable
-" noremap <C-Space> <C-x><C-o>
-" noremap <C-@> <C-Space>
-" noremap <SPACE> za
-" noremap <C-SPACE> zO
 
 " Allow project specific vimrc
 set exrc

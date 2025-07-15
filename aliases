@@ -33,9 +33,14 @@ alias tmrl="tmux resize-pane -L"
 alias tmrr="tmux resize-pane -R"
 
 # test running with entr
+alias espec="find . -name '*.rb' | entr -c bundle exec rspec --no-profile  --order defined"
 alias entrspec="find . -name '*.rb' | entr -c bin/rspec --no-profile  --order defined"
 alias entrspecrandom="find . -name '*.rb' | entr -c bin/rspec --no-profile  --order random"
-alias enterspecnospring="find . -name '*.rb' | entr -c bundle exec rspec --no-profile  --order defined"
+alias entrspecnospring="find . -name '*.rb' | entr -c bundle exec rspec --no-profile  --order defined"
+
+alias enterspec="entrspec"
+
+alias entrsrb="find . -name '*.rb' | entr -c bin/srb"
 
 
 # Include custom aliases

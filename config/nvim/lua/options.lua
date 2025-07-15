@@ -25,6 +25,9 @@ local Options = {
     vim.opt.tabstop = 2
     vim.opt.title = true
     vim.opt.wb = false
+    vim.opt.foldmethod = "syntax"
+    vim.opt.foldenable = false
+
 
     vim.api.nvim_set_option("clipboard","unnamed")
   end,

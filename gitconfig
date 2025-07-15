@@ -1,5 +1,6 @@
 [push]
   default=current
+	autoSetupRemote = true
 [color]
   ui = auto
 [core]
@@ -22,11 +23,15 @@
   commendall = commit -a --amend --no-edit
 	diffup = diff @{upstream}
 	diffmast = diff origin/master
+	diffmain = diff origin/main
   pfwl = push --force-with-lease
 	resetuphard = reset --hard @{upstream}
-	resetmasthard = reset --hard origin/master
+	; resetmasthard = reset --hard origin/master
+	resetmainhard = reset --hard origin/main
   resetlast = reset HEAD~1
   rebaseup = rebase -i @{upstream}
-  rebasemast = rebase -i origin/master
+  ; rebasemast = rebase -i origin/master
+  rebasemain = rebase -i origin/main
   logtopcommits = log --oneline -n 20
   logmasterdiff = log origin/master.. --oneline
+  logmaindiff = log origin/main.. --oneline

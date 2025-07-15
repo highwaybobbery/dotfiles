@@ -172,6 +172,7 @@ return {
       -- LSP setup
       ---
       local lsp_zero = require('lsp-zero')
+      lsp_zero.extend_lspconfig()
 
       lsp_zero.on_attach(function(client, bufnr)
         -- see :help lsp-zero-keybindings
@@ -256,4 +257,5 @@ return {
     end
   },
   { 'github/copilot.vim'},
+  { 'pedrohdz/vim-yaml-folds'},
 }
