@@ -1,0 +1,158 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'pathname'
+require 'yaml'
+require 'io/console'
+
+class SwingTo
+  def initialize
+    @projects_dir = File.expand_path('~/Projects')
+    @repos_config = load_repos_config
+  end
+
+  def run
+    parse_options
+    worktrees = discover_worktrees
+    
+    if worktrees.empty?
+      puts "No worktrees found in #{@projects_dir}"
+      exit 1
+    end
+
+    selected_worktree = prompt_for_selection(worktrees)
+    change_directory(selected_worktree)
+  end
+
+  private
+
+  def load_repos_config
+    config_file = File.expand_path('~/Environment/repos.yml')
+    unless File.exist?(config_file)
+      puts "Error: repos.yml not found at #{config_file}"
+      exit 1
+    end
+    YAML.load_file(config_file)
+  end
+
+  def parse_options
+    option_parser = OptionParser.new do |opts|
+      opts.banner = "Usage: #{$0} [options]"
+      opts.separator ""
+      opts.separator "Interactive worktree navigation utility"
+      opts.separator ""
+      opts.separator "Options:"
+
+      opts.on('-h', '--help', 'Show this help message') do
+        puts opts
+        exit
+      end
+    end
+
+    begin
+      option_parser.parse!
+    rescue OptionParser::InvalidOption => e
+      puts "Error: #{e.message}"
+      puts option_parser
+      exit 1
+    end
+  end
+
+  def discover_worktrees
+    worktrees = []
+    
+    @repos_config['owners'].each do |owner, repos|
+      owner_path = Pathname.new(@projects_dir) / owner
+      next unless owner_path.exist?
+
+      repos.each_key do |repo_name|
+        # Check both workspace and direct structures
+        [
+          owner_path / "#{repo_name}-workspace",
+          owner_path / repo_name
+        ].each do |repo_path|
+          next unless repo_path.exist?
+
+          # Find all directories that could be worktrees
+          repo_path.children.select(&:directory?).each do |potential_worktree|
+            # Skip if it's a bare git repo (contains objects, refs, etc.)
+            next if (potential_worktree / 'objects').exist?
+            
+            # Check if it's a git worktree (has .git file or directory)
+            if (potential_worktree / '.git').exist?
+              worktrees << {
+                owner: owner,
+                repo: repo_name,
+                worktree: potential_worktree.basename.to_s,
+                path: potential_worktree,
+                display_name: "#{owner}/#{repo_name}/#{potential_worktree.basename}"
+              }
+            end
+          end
+        end
+      end
+    end
+
+    # Sort by owner, then repo, then worktree name
+    worktrees.sort_by { |w| [w[:owner], w[:repo], w[:worktree]] }
+  end
+
+  def prompt_for_selection(worktrees)
+    puts "\nAvailable worktrees:"
+    puts "==================="
+    
+    current_owner = nil
+    worktrees.each_with_index do |worktree, index|
+      # Print owner header if it's a new owner
+      if worktree[:owner] != current_owner
+        puts unless current_owner.nil?
+        puts "#{worktree[:owner].upcase}:"
+        current_owner = worktree[:owner]
+      end
+      
+      printf "%3d) %s/%s\n", index + 1, worktree[:repo], worktree[:worktree]
+    end
+    
+    puts "\nSelect a worktree (1-#{worktrees.length}, or 'q' to quit):"
+    
+    loop do
+      print "> "
+      input = STDIN.gets&.strip
+      
+      # Handle empty input (like when run non-interactively)
+      if input.nil? || input.empty?
+        puts "No input received. Exiting."
+        exit 1
+      end
+      
+      case input
+      when 'q', 'quit', 'exit'
+        puts "Goodbye!"
+        exit 0
+      when /^\d+$/
+        selection = input.to_i
+        if selection >= 1 && selection <= worktrees.length
+          return worktrees[selection - 1]
+        else
+          puts "Invalid selection. Please enter a number between 1 and #{worktrees.length}."
+        end
+      else
+        puts "Invalid input. Please enter a number (1-#{worktrees.length}) or 'q' to quit."
+      end
+    end
+  end
+
+  def change_directory(worktree)
+    target_dir = worktree[:path].to_s
+    puts "\nSwitching to: #{worktree[:display_name]}"
+    puts "Directory: #{target_dir}"
+    
+    # For shell integration, we need to output the directory change command
+    # This will be handled by a shell function that wraps this script
+    puts "SWINGTO_TARGET_DIR=#{target_dir}"
+  end
+end
+
+# Run the script
+SwingTo.new.run
