@@ -34,14 +34,20 @@ if [[ "$THEME" == "light" ]]; then
     # Update tmux-dark-notify theme paths
     sed -i '' "s|set -g @dark-notify-theme-path-light.*|set -g @dark-notify-theme-path-light '\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/catppuccin-latte.conf'|" "$DOTFILES_DIR/tmux.conf"
     # Update tmux-powerline theme
-    sed -i '' "s|export TMUX_POWERLINE_THEME_DEFAULT=.*|export TMUX_POWERLINE_THEME_DEFAULT=\"\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/tmux-powerline-catppuccin-latte.sh\"|" ~/.config/tmux-powerline/config.sh
+    sed -i '' "s|export TMUX_POWERLINE_THEME_DEFAULT=.*|export TMUX_POWERLINE_THEME_DEFAULT=\"catppuccin-latte\"|" ~/.config/tmux-powerline/config.sh
+    # Update tmux status colors to Catppuccin Latte
+    sed -i '' 's|set -g status-style "fg=#[^"]*"|set -g status-style "fg=#7287fd"|' "$DOTFILES_DIR/tmux.conf"
+    sed -i '' 's|set -g status-left-style "fg=#[^"]*"|set -g status-left-style "fg=#89b4fa"|' "$DOTFILES_DIR/tmux.conf"
     # Reload tmux config
     tmux source-file "$DOTFILES_DIR/tmux.conf" 2>/dev/null || true
 else
     # Update tmux-dark-notify theme paths
     sed -i '' "s|set -g @dark-notify-theme-path-dark.*|set -g @dark-notify-theme-path-dark '\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/catppuccin-mocha.conf'|" "$DOTFILES_DIR/tmux.conf"
     # Update tmux-powerline theme
-    sed -i '' "s|export TMUX_POWERLINE_THEME_DEFAULT=.*|export TMUX_POWERLINE_THEME_DEFAULT=\"\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/tmux-powerline-catppuccin-mocha.sh\"|" ~/.config/tmux-powerline/config.sh
+    sed -i '' "s|export TMUX_POWERLINE_THEME_DEFAULT=.*|export TMUX_POWERLINE_THEME_DEFAULT=\"catppuccin-mocha\"|" ~/.config/tmux-powerline/config.sh
+    # Update tmux status colors to Catppuccin Mocha
+    sed -i '' 's|set -g status-style "fg=#[^"]*"|set -g status-style "fg=#b4befe"|' "$DOTFILES_DIR/tmux.conf"
+    sed -i '' 's|set -g status-left-style "fg=#[^"]*"|set -g status-left-style "fg=#89b4fa"|' "$DOTFILES_DIR/tmux.conf"
     # Reload tmux config
     tmux source-file "$DOTFILES_DIR/tmux.conf" 2>/dev/null || true
 fi
