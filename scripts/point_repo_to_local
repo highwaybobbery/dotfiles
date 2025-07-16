@@ -1,0 +1,189 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'pathname'
+require 'yaml'
+
+class PointRepoToLocal
+  def initialize
+    @options = {}
+    @projects_dir = File.expand_path('~/Projects')
+    @repos_config = load_repos_config
+  end
+
+  def run
+    parse_options
+    validate_inputs
+    point_gem_to_local
+  end
+
+  private
+
+  def load_repos_config
+    config_file = File.expand_path('~/Environment/repos.yml')
+    unless File.exist?(config_file)
+      puts "Error: repos.yml not found at #{config_file}"
+      exit 1
+    end
+    YAML.load_file(config_file)
+  end
+
+  def parse_options
+    option_parser = OptionParser.new do |opts|
+      opts.banner = "Usage: #{$0} [options] TARGET_REPO GEM_NAME [TARGET_WORKTREE] [GEM_WORKTREE]"
+      opts.separator ""
+      opts.separator "Point a gem in target repo to a local worktree"
+      opts.separator ""
+      opts.separator "Examples:"
+      opts.separator "  #{$0} dot-com administered-policies PAP-175-ui PAP-175-engine"
+      opts.separator "  #{$0} dot-com administered_policies PAP-175-ui  # Uses same worktree name for gem"
+      opts.separator ""
+      opts.separator "Options:"
+
+      opts.on('-h', '--help', 'Show this help message') do
+        puts opts
+        exit
+      end
+    end
+
+    begin
+      option_parser.parse!
+    rescue OptionParser::InvalidOption => e
+      puts "Error: #{e.message}"
+      puts option_parser
+      exit 1
+    end
+
+    if ARGV.length < 2 || ARGV.length > 4
+      puts "Error: Please provide target repo, gem name, and optional worktree names"
+      puts option_parser
+      exit 1
+    end
+
+    @target_repo = ARGV[0]
+    @gem_name = ARGV[1]
+    @target_worktree = ARGV[2]
+    @gem_worktree = ARGV[3] || @target_worktree
+  end
+
+  def find_repo_owner(repo_name)
+    normalized_repo = repo_name.tr('_', '-')
+    
+    @repos_config['owners'].each do |owner, repos|
+      return owner if repos.key?(normalized_repo) || repos.key?(repo_name)
+    end
+    
+    puts "Error: Could not find repository '#{repo_name}' in repos.yml"
+    exit 1
+  end
+
+  def find_repo_path(repo_name, owner = nil)
+    owner ||= find_repo_owner(repo_name)
+    
+    # Try workspace structure first, then direct structure
+    workspace_path = Pathname.new(@projects_dir) / owner / "#{repo_name}-workspace"
+    direct_path = Pathname.new(@projects_dir) / owner / repo_name
+    
+    if workspace_path.exist?
+      workspace_path
+    elsif direct_path.exist?
+      direct_path
+    else
+      puts "Error: Repository '#{repo_name}' not found in #{owner} directory"
+      exit 1
+    end
+  end
+
+  def validate_inputs
+    # Get current worktree name if not provided
+    if @target_worktree.nil?
+      current_dir = Pathname.new(Dir.pwd)
+      # Try to extract worktree name from current directory
+      if current_dir.to_s.include?(@target_repo)
+        @target_worktree = current_dir.basename.to_s
+        @gem_worktree = @target_worktree
+      else
+        puts "Error: Could not determine current worktree name. Please provide worktree name."
+        exit 1
+      end
+    end
+
+    # Find target repo
+    @target_repo_path = find_repo_path(@target_repo)
+    @target_worktree_path = @target_repo_path / @target_worktree
+    unless @target_worktree_path.exist?
+      puts "Error: Target repo worktree not found at #{@target_worktree_path}"
+      exit 1
+    end
+
+    # Find gem repo (could be in different owner)
+    @gem_repo_path = find_repo_path(@gem_name.tr('_', '-'))
+    @gem_worktree_path = @gem_repo_path / @gem_worktree
+    unless @gem_worktree_path.exist?
+      puts "Error: Gem worktree not found at #{@gem_worktree_path}"
+      exit 1
+    end
+
+    # Check if Gemfile exists
+    @gemfile_path = @target_worktree_path / "Gemfile"
+    unless @gemfile_path.exist?
+      puts "Error: Gemfile not found at #{@gemfile_path}"
+      exit 1
+    end
+  end
+
+  def point_gem_to_local
+    puts "Pointing #{@gem_name} to local worktree..."
+    puts "Target repo worktree: #{@target_worktree_path}"
+    puts "Gem worktree: #{@gem_worktree_path}"
+
+    # Read Gemfile
+    gemfile_content = File.read(@gemfile_path)
+    
+    # Calculate relative path from target worktree to gem worktree
+    relative_path = @gem_worktree_path.relative_path_from(@target_worktree_path)
+    
+    # Convert gem name to both formats for matching
+    gem_name_underscores = @gem_name.tr('-', '_')
+    gem_name_hyphens = @gem_name.tr('_', '-')
+    
+    # Update gem line (try both underscore and hyphen versions)
+    updated = false
+    [gem_name_underscores, gem_name_hyphens].each do |gem_variant|
+      pattern = /^(\s*gem\s+["']#{Regexp.escape(gem_variant)}["'])(?:\s*,\s*[^#\n]*)?(\s*#.*)?$/
+      if gemfile_content.match(pattern)
+        gemfile_content = gemfile_content.gsub(pattern, "\\1, path: \"#{relative_path}\"\\2")
+        updated = true
+        break
+      end
+    end
+
+    unless updated
+      puts "Error: Could not find gem '#{@gem_name}' in Gemfile"
+      exit 1
+    end
+
+    # Write updated Gemfile
+    File.write(@gemfile_path, gemfile_content)
+    puts "Updated Gemfile with local path: #{relative_path}"
+
+    # Run bundle install
+    Dir.chdir(@target_worktree_path) do
+      puts "Running bundle install..."
+      system("bundle install") or raise "Bundle install failed"
+    end
+
+    # Commit the change
+    Dir.chdir(@target_worktree_path) do
+      puts "Committing Gemfile change..."
+      system("git add Gemfile") or raise "Git add failed"
+      system("git commit -m 'DO NOT MERGE LOCAL GEM POINTER'") or raise "Git commit failed"
+    end
+
+    puts "✅ Successfully pointed #{@gem_name} to local worktree!"
+  end
+end
+
+# Run the script
+PointRepoToLocal.new.run
