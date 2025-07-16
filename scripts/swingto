@@ -5,6 +5,7 @@ require 'optparse'
 require 'pathname'
 require 'yaml'
 require 'io/console'
+require 'shellwords'
 
 class SwingTo
   def initialize
@@ -99,58 +100,62 @@ class SwingTo
   end
 
   def prompt_for_selection(worktrees)
-    puts "\nAvailable worktrees:"
-    puts "==================="
+    $stdout.puts "\nAvailable worktrees:"
+    $stdout.puts "==================="
     
     current_owner = nil
     worktrees.each_with_index do |worktree, index|
       # Print owner header if it's a new owner
       if worktree[:owner] != current_owner
-        puts unless current_owner.nil?
-        puts "#{worktree[:owner].upcase}:"
+        $stdout.puts unless current_owner.nil?
+        $stdout.puts "#{worktree[:owner].upcase}:"
         current_owner = worktree[:owner]
       end
       
-      printf "%3d) %s/%s\n", index + 1, worktree[:repo], worktree[:worktree]
+      $stdout.printf "%3d) %s/%s\n", index + 1, worktree[:repo], worktree[:worktree]
     end
     
-    puts "\nSelect a worktree (1-#{worktrees.length}, or 'q' to quit):"
+    $stdout.puts "\nSelect a worktree (1-#{worktrees.length}, or 'q' to quit):"
+    $stdout.flush
     
     loop do
-      print "> "
-      input = STDIN.gets&.strip
+      $stdout.print "> "
+      $stdout.flush
+      input = $stdin.gets&.strip
       
       # Handle empty input (like when run non-interactively)
       if input.nil? || input.empty?
-        puts "No input received. Exiting."
+        $stdout.puts "No input received. Exiting."
         exit 1
       end
       
       case input
       when 'q', 'quit', 'exit'
-        puts "Goodbye!"
+        $stdout.puts "Goodbye!"
         exit 0
       when /^\d+$/
         selection = input.to_i
         if selection >= 1 && selection <= worktrees.length
           return worktrees[selection - 1]
         else
-          puts "Invalid selection. Please enter a number between 1 and #{worktrees.length}."
+          $stdout.puts "Invalid selection. Please enter a number between 1 and #{worktrees.length}."
         end
       else
-        puts "Invalid input. Please enter a number (1-#{worktrees.length}) or 'q' to quit."
+        $stdout.puts "Invalid input. Please enter a number (1-#{worktrees.length}) or 'q' to quit."
       end
     end
   end
 
   def change_directory(worktree)
     target_dir = worktree[:path].to_s
-    puts "\nSwitching to: #{worktree[:display_name]}"
+    puts "\nSelected: #{worktree[:display_name]}"
     puts "Directory: #{target_dir}"
     
-    # For shell integration, we need to output the directory change command
-    # This will be handled by a shell function that wraps this script
-    puts "SWINGTO_TARGET_DIR=#{target_dir}"
+    # Save selection to file for swingto-go command
+    selection_file = File.expand_path('~/.swingto_selection')
+    File.write(selection_file, target_dir)
+    
+    puts "\nRun 'swingto-go' to change to this directory"
   end
 end
 
