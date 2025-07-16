@@ -34,7 +34,7 @@ class RepoManager
     puts "Default branch for #{owner}/#{repo_name} is: #{default_branch}"
 
     repos_data = load_repos_file
-    
+
     if repo_exists?(repos_data, owner, repo_name)
       handle_existing_repo(repos_data, owner, repo_name, default_branch)
     else
@@ -76,7 +76,7 @@ class RepoManager
 
   def get_default_branch(git_url)
     stdout, stderr, status = Open3.capture3('git', 'ls-remote', '--symref', git_url, 'HEAD')
-    
+
     if status.success?
       # Find the line with "ref: refs/heads/" and extract just the branch name
       ref_line = stdout.lines.find { |line| line.include?('ref: refs/heads/') }

@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(chmod:*)",
-      "Bash(tmux show-options:*)"
+      "Bash(tmux show-options:*)",
+      "Bash(ruby:*)",
+      "mcp__mcp-remote__searchJiraIssuesUsingJql",
+      "Bash(afplay:*)"
     ],
     "deny": []
   }

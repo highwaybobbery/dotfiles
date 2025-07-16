@@ -7,7 +7,8 @@ Personal dotfiles and development toolkit for working across multiple code repos
 This repository contains:
 - **Dotfiles**: Shell configuration, aliases, and environment setup
 - **Development Scripts**: Ruby utilities for repository management and project setup
-- **Configuration Files**: Git, Vim, Tmux, and terminal configurations
+- **Configuration Files**: Git, Vim, Tmux, Neovim, and terminal configurations
+- **Theme Management**: Centralized theme switching for development environment
 
 ## Directory Structure
 
@@ -15,10 +16,21 @@ This repository contains:
 .
 ├── scripts/              # Ruby development utilities
 │   ├── add_repo.rb      # Add repositories to tracking system
-│   └── clone_project.rb # Clone repositories into workspace structure
+│   ├── clone_project.rb # Clone repositories into bare repo structure
+│   ├── install_repos.rb # Install all repositories from repos.yml
+│   └── theme-switcher   # Theme switching for Alacritty, tmux, Neovim
+├── bin/                 # Symlinked executables
+│   └── theme-switcher   # Theme switcher symlink
 ├── config/              # Configuration files for various tools
 │   ├── alacritty/       # Terminal emulator configuration
-│   └── nvim/            # Neovim configuration
+│   │   ├── alacritty.toml
+│   │   ├── catppuccin-latte.toml
+│   │   └── catppuccin-mocha.toml
+│   ├── nvim/            # Neovim configuration
+│   │   ├── init.lua
+│   │   └── lua/
+│   └── tmux/            # Tmux themes
+│       └── themes/
 ├── aliases              # Shell aliases
 ├── zshrc               # Zsh configuration
 ├── vimrc               # Vim configuration
@@ -51,7 +63,7 @@ Adds repositories to the tracking system and optionally clones them.
 ```
 
 #### clone_project.rb
-Clones repositories into standardized workspace directories.
+Clones repositories as bare repos with worktrees based on their default branch.
 
 **Usage:**
 ```bash
@@ -63,21 +75,65 @@ Clones repositories into standardized workspace directories.
 ./scripts/clone_project.rb kin/dot-com
 ```
 
+This creates a bare repository with a worktree for the default branch.
+
+#### install_repos.rb
+Installs all repositories defined in `~/Environment/repos.yml`.
+
+**Usage:**
+```bash
+./scripts/install_repos.rb
+```
+
+This script reads the repository configuration and clones all tracked repositories.
+
+### Theme Management
+
+#### theme-switcher
+Centralized theme switching for Alacritty, tmux, and Neovim.
+
+**Usage:**
+```bash
+./scripts/theme-switcher [light|dark]
+```
+
+**Examples:**
+```bash
+./scripts/theme-switcher light   # Switch to light theme
+./scripts/theme-switcher dark    # Switch to dark theme
+```
+
+This script:
+- Updates Alacritty to use Catppuccin Latte (light) or Mocha (dark)
+- Updates tmux themes and powerline configuration
+- Updates Neovim Catppuccin plugin flavour
+- Reloads configurations automatically
+- Plays notification sound when complete
+
 ### Workspace Structure
 
-All projects follow a consistent workspace structure organized by owner:
+All projects follow a consistent bare repository structure organized by owner:
 
 ```
 ~/Projects/
 ├── kin/
-│   ├── dot-com-workspace/
-│   │   └── main/           # Main branch checkout
-│   └── rater-api-workspace/
-│       └── main/           # Main branch checkout
+│   ├── dot-com/            # Bare repository
+│   │   ├── main/           # Main branch worktree
+│   │   └── [feature-branches]/ # Feature branch worktrees
+│   ├── administered-policies/
+│   │   ├── main/           # Main branch worktree
+│   │   └── PAP-175-add-underwriting-cancellation-restrictions/
+│   └── rater-api/
+│       └── main/           # Main branch worktree
 └── highwaybobbery/
-    └── dotfiles-workspace/
-        └── main/           # Main branch checkout
+    └── dotfiles/           # Bare repository
+        └── master/         # Master branch worktree
 ```
+
+This structure uses git bare repositories with worktrees, allowing:
+- Multiple branches to be checked out simultaneously
+- Isolated working directories for each branch
+- Efficient disk usage and faster branch switching
 
 ### Repository Tracking
 
@@ -89,12 +145,42 @@ owners:
   kin:
     dot-com:
       default_branch: main
+    administered-policies:
+      default_branch: main
     rater-api:
       default_branch: main
+    accounting_system:
+      default_branch: master
   highwaybobbery:
     dotfiles:
       default_branch: master
 ```
+
+## Environment Directory
+
+The `~/Environment/` directory contains configuration and data files:
+
+```
+~/Environment/
+├── local_dotfiles/          # Local configuration overrides
+│   ├── .aliases.local       # Custom aliases
+│   ├── .gitconfig.local     # Git configuration overrides
+│   └── .zshrc.local         # Zsh configuration overrides
+├── repos.yml                # Repository tracking configuration
+└── alacritty-theme/         # Alacritty theme collection
+    ├── themes/              # Theme files
+    └── images/              # Theme preview images
+```
+
+### Local Configuration Files
+
+The `~/Environment/local_dotfiles/` directory contains environment-specific configuration:
+
+- **`.aliases.local`**: Custom aliases for navigation and utilities
+- **`.gitconfig.local`**: Git configuration overrides (user info, etc.)
+- **`.zshrc.local`**: Zsh configuration overrides (environment variables, etc.)
+
+These files are sourced by the main dotfiles and provide a way to customize the environment without modifying the main dotfiles repository.
 
 ## Environment Variables
 
@@ -104,21 +190,44 @@ The following environment variables are configured:
 - `DEV_KIT_DIRECTORY` - Path to dev kit repository
 - `PROJECTS_DIRECTORY` - Path to all projects (`~/Projects`)
 - `REPOS_FILE` - Path to repository tracking file (`~/Environment/repos.yml`)
+- `ENVIRONMENT_DIRECTORY` - Path to environment configuration (`~/Environment`)
 
 ## Shell Aliases
 
 Key aliases for development workflow:
 
+### Navigation Aliases
 ```bash
 # Project navigation
 alias projects="cd ~/Projects"
 alias kin="cd ~/Projects/kin"
-alias dotcom="cd ~/Projects/kin/dot-com"
-alias rater="cd ~/Projects/kin/rater-api"
+alias dotcom="cd ~/Projects/kin/dot-com/main"
+alias rater="cd ~/Projects/kin/rater-api/main"
 
 # Development utilities
-alias add_repo="~/Projects/highwaybobbery/dotfiles-workspace/main/scripts/add_repo.rb"
-alias clone_project="~/Projects/highwaybobbery/dotfiles-workspace/main/scripts/clone_project.rb"
+alias add_repo="~/Projects/highwaybobbery/dotfiles/master/scripts/add_repo.rb"
+alias clone_project="~/Projects/highwaybobbery/dotfiles/master/scripts/clone_project.rb"
+```
+
+### Standard Aliases
+```bash
+# Basic navigation
+alias v="nvim"
+alias p="cd ~/Projects/"
+alias dotfiles="cd ~/Projects/highwaybobbery/dotfiles/master"
+
+# Git shortcuts
+alias g="git"
+alias gs="git status"
+alias gco="git checkout"
+
+# Rails/Ruby development
+alias spec="bundle exec rspec -fd"
+alias brake="bundle exec rake"
+
+# Tmux utilities
+alias tmru="tmux resize-pane -U"
+alias tmrd="tmux resize-pane -D"
 ```
 
 ## Installation
@@ -190,24 +299,45 @@ add_repo owner/repo_name
 This will:
 1. Detect the repository's default branch
 2. Add it to `~/Environment/repos.yml`
-3. Optionally clone it into the workspace structure
+3. Optionally clone it as a bare repository with worktree
 
 ### Cloning Repositories
 
-To clone a repository into the workspace structure:
+To clone a repository into the bare repository structure:
 
 ```bash
 clone_project owner/repo_name
 ```
 
-This creates the directory structure and clones the repository into the appropriate location.
+This creates a bare repository with a worktree for the default branch.
+
+### Installing All Repositories
+
+To install all repositories from your configuration:
+
+```bash
+install_repos
+```
+
+This reads `~/Environment/repos.yml` and clones all tracked repositories.
+
+### Theme Management
+
+Switch between light and dark themes:
+
+```bash
+theme-switcher light    # Switch to light theme
+theme-switcher dark     # Switch to dark theme
+```
 
 ### Development Workflow
 
 1. **Add Repository**: `add_repo kin/new-project`
-2. **Navigate**: `cd ~/Projects/kin/new-project-workspace/main`
-3. **Develop**: Work on the project
-4. **Switch Projects**: Use aliases like `dotcom` or `rater`
+2. **Navigate**: `cd ~/Projects/kin/new-project/main`
+3. **Create Feature Branch**: Use git worktree or your preferred branching tool
+4. **Develop**: Work on the project
+5. **Switch Projects**: Use aliases like `dotcom` or `rater`
+6. **Theme Switching**: Use `theme-switcher` to adjust environment
 
 ## Customization
 
@@ -235,6 +365,9 @@ chmod +x scripts/new_script.rb
 - Git
 - Zsh shell
 - Oh My Zsh (installed automatically)
+- Alacritty terminal emulator (for theme switching)
+- Tmux (for terminal multiplexing and theme switching)
+- Neovim (for theme switching)
 
 ## Troubleshooting
 
