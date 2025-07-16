@@ -63,23 +63,12 @@ echo "Dotfiles installation complete!"
 # DEVELOPMENT ENVIRONMENT SETUP SECTION
 # =============================================================================
 # This section handles development environment setup:
-# - Checks for Ruby availability
 # - Creates Environment directory and repos.yml
 # - Sets up repository tracking system
 # - Clones tracked repositories into workspace structure
 
 echo ""
 echo "Starting development environment setup..."
-
-# Check if Ruby is available (required for repository management scripts)
-if ! command -v ruby &> /dev/null; then
-    echo "Ruby is required for repository management but is not installed."
-    echo "Please install Ruby and try again."
-    echo "Skipping repository setup..."
-    exit 0
-else
-    echo "Ruby is available"
-fi
 
 # Ensure Environment directory exists for storing repos.yml
 if [ ! -d "$HOME/Environment" ]; then
@@ -95,8 +84,6 @@ if [ ! -f "$HOME/Environment/repos.yml" ]; then
     cat > "$HOME/Environment/repos.yml" << 'EOF'
 ---
 owners:
-  kin:
-  highwaybobbery:
 EOF
     echo "Created $HOME/Environment/repos.yml"
 else
