@@ -9,13 +9,12 @@ family = "UbuntuMono Nerd Font"
 [window]
 decorations = "none"
 decorations_theme_variant = "none"
+startup_mode = "maximized"
 
 [window.padding]
 x = 7
 y = 7
 
 [general]
-# themes from https://github.com/alacritty/alacritty-theme
- # import = ["~/Environment/alacritty-theme/themes/gruvbox_dark.toml"]
- import = ["~/Environment/alacritty-theme/themes/everforest_light.toml"]
-# import
+live_config_reload = true
+import = ["catppuccin-latte.toml"]

@@ -1,13 +1,50 @@
 return {
-  -- { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
   {
-    "neanias/everforest-nvim",
-    version = false,
-    lazy = false,
+    "catppuccin/nvim",
+    name = "catppuccin",
     priority = 1000,
-    config = function ()
-      require("everforest").setup({
-        background = "hard"
+    config = function()
+      require("catppuccin").setup({
+        flavour = "latte", -- latte, frappe, macchiato, mocha
+        background = { -- :h background
+          light = "latte",
+          dark = "mocha",
+        },
+        transparent_background = false,
+        show_end_of_buffer = false,
+        term_colors = true,
+        dim_inactive = {
+          enabled = false,
+          shade = "dark",
+          percentage = 0.15,
+        },
+        no_italic = false,
+        no_bold = false,
+        no_underline = false,
+        styles = {
+          comments = { "italic" },
+          conditionals = { "italic" },
+          loops = {},
+          functions = {},
+          keywords = {},
+          strings = {},
+          variables = {},
+          numbers = {},
+          booleans = {},
+          properties = {},
+          types = {},
+          operators = {},
+        },
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          telescope = true,
+          mason = true,
+          neotree = true,
+          which_key = true,
+        },
       })
     end
   },

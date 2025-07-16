@@ -1,0 +1,82 @@
+#!/bin/bash
+
+# Centralized theme switcher for Alacritty, Tmux, and Neovim
+# Usage: theme-switcher [light|dark]
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
+CONFIG_DIR="$DOTFILES_DIR/config"
+
+# Default to light mode if no argument provided
+THEME=${1:-light}
+
+# Validate theme argument
+if [[ "$THEME" != "light" && "$THEME" != "dark" ]]; then
+    echo "Usage: $0 [light|dark]"
+    exit 1
+fi
+
+echo "Switching to $THEME mode..."
+
+# 1. Switch Alacritty theme
+echo "Updating Alacritty theme..."
+if [[ "$THEME" == "light" ]]; then
+    sed -i '' 's/import = \["catppuccin-.*\.toml"\]/import = ["catppuccin-latte.toml"]/' "$CONFIG_DIR/alacritty/alacritty.toml"
+else
+    sed -i '' 's/import = \["catppuccin-.*\.toml"\]/import = ["catppuccin-mocha.toml"]/' "$CONFIG_DIR/alacritty/alacritty.toml"
+fi
+
+# 2. Switch tmux theme
+echo "Updating tmux theme..."
+if [[ "$THEME" == "light" ]]; then
+    # Update tmux-dark-notify theme paths
+    sed -i '' "s|set -g @dark-notify-theme-path-light.*|set -g @dark-notify-theme-path-light '\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/catppuccin-latte.conf'|" "$DOTFILES_DIR/tmux.conf"
+    # Update tmux-powerline theme
+    sed -i '' "s|export TMUX_POWERLINE_THEME_DEFAULT=.*|export TMUX_POWERLINE_THEME_DEFAULT=\"\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/tmux-powerline-catppuccin-latte.sh\"|" ~/.config/tmux-powerline/config.sh
+    # Reload tmux config
+    tmux source-file "$DOTFILES_DIR/tmux.conf" 2>/dev/null || true
+else
+    # Update tmux-dark-notify theme paths
+    sed -i '' "s|set -g @dark-notify-theme-path-dark.*|set -g @dark-notify-theme-path-dark '\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/catppuccin-mocha.conf'|" "$DOTFILES_DIR/tmux.conf"
+    # Update tmux-powerline theme
+    sed -i '' "s|export TMUX_POWERLINE_THEME_DEFAULT=.*|export TMUX_POWERLINE_THEME_DEFAULT=\"\$HOME/Projects/highwaybobbery/dotfiles/master/config/tmux/themes/tmux-powerline-catppuccin-mocha.sh\"|" ~/.config/tmux-powerline/config.sh
+    # Reload tmux config
+    tmux source-file "$DOTFILES_DIR/tmux.conf" 2>/dev/null || true
+fi
+
+# 3. Switch Neovim theme
+echo "Updating Neovim theme..."
+if [[ "$THEME" == "light" ]]; then
+    # Update Catppuccin flavour to latte
+    sed -i '' 's/flavour = "[^"]*"/flavour = "latte"/' "$CONFIG_DIR/nvim/lua/plugins.lua"
+else
+    # Update Catppuccin flavour to mocha
+    sed -i '' 's/flavour = "[^"]*"/flavour = "mocha"/' "$CONFIG_DIR/nvim/lua/plugins.lua"
+fi
+
+# Signal all running Neovim instances to reload config
+echo "Signaling Neovim instances to reload..."
+if command -v nvr &> /dev/null; then
+    # Using neovim-remote if available
+    nvr --serverlist | while read -r server; do
+        nvr --servername "$server" --remote-send ':source $MYVIMRC<CR>' 2>/dev/null || true
+    done
+else
+    # Alternative: send signals to tmux panes running nvim
+    tmux list-panes -a -F '#{session_name}:#{window_index}.#{pane_index} #{pane_current_command}' 2>/dev/null | \
+    grep -E '(nvim|vim)' | \
+    cut -d' ' -f1 | \
+    while read -r pane; do
+        tmux send-keys -t "$pane" ':source $MYVIMRC' Enter 2>/dev/null || true
+    done
+fi
+
+echo "Theme switched to $THEME mode successfully!"
+echo "Note: Some changes may require restarting applications or tmux sessions."
+
+# Play notification sound
+if [[ -f "/System/Library/Sounds/Submarine.aiff" ]]; then
+    afplay /System/Library/Sounds/Submarine.aiff
+fi

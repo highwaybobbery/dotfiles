@@ -20,9 +20,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup("plugins")
 
--- require("catppuccin").setup()
--- vim.cmd.colorscheme "catppuccin"
-vim.cmd('colorscheme everforest')
+vim.cmd.colorscheme "catppuccin"
 vim.cmd('highlight Normal guibg=NONE ctermbg=NONE')
 --   :hi EndOfBuffer guibg=NONE ctermbg=NONE
 --   :hi StatusLine guibg=NONE ctermbg=NONE
