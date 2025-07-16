@@ -9,7 +9,7 @@ alias nvc="cd ~/.config/nvim && v"
 alias srcaliases="source ~/.aliases"
 alias :q="exit"
 alias quit="exit"
-alias dotfiles="cd ~/Environment/dotfiles/"
+alias dotfiles="cd ~/Projects/highwaybobbery/dotfiles/master"
 
 alias aliases="cat ~/.aliases ~/.aliases.local"
 alias gitaliases="cat ~/.gitconfig ~/.gitconfig.local"

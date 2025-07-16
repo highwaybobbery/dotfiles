@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(afplay:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(ls:*)"
+    ],
+    "deny": []
+  }
+}

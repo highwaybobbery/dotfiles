@@ -24,8 +24,7 @@ class ProjectCloner
     
     owner_dir = File.join(@projects_directory, owner)
     repo_dir = File.join(owner_dir, repo_name)
-    trees_dir = File.join(repo_dir, "trees")
-    default_dir = File.join(trees_dir, "default")
+    branch_dir = File.join(repo_dir, default_branch)
 
     # Create owner directory
     FileUtils.mkdir_p(owner_dir)
@@ -40,16 +39,13 @@ class ProjectCloner
       exit 1
     end
 
-    # Create trees directory
-    FileUtils.mkdir_p(trees_dir)
-
     # Add worktree for default branch
     Dir.chdir(repo_dir) do
-      stdout, stderr, status = Open3.capture3('git', 'worktree', 'add', default_dir, default_branch)
+      stdout, stderr, status = Open3.capture3('git', 'worktree', 'add', branch_dir, default_branch)
       
       if status.success?
         puts "Successfully cloned #{owner_repo} as bare repository"
-        puts "Created worktree for #{default_branch} at #{default_dir}"
+        puts "Created worktree for #{default_branch} at #{branch_dir}"
       else
         puts "Error creating worktree for #{default_branch}:"
         puts stderr

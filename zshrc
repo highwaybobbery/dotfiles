@@ -73,6 +73,49 @@ plugins=(git vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
+# Custom prompt for git worktrees
+function git_worktree_prompt() {
+  if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    local repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+    if [[ -n "$repo_root" ]]; then
+      local repo_name=$(basename "$repo_root")
+      local worktree_name=$(git branch --show-current 2>/dev/null || echo "detached")
+      local current_dir=$(pwd)
+      
+      # Get path relative to repo root
+      local rel_path=${current_dir#$repo_root}
+      rel_path=${rel_path#/}
+      
+      if [[ -n "$rel_path" ]]; then
+        # Split path into components
+        local path_parts=(${(s:/:)rel_path})
+        local abbreviated_path=""
+        
+        # Abbreviate all but the last component
+        for ((i=1; i<${#path_parts[@]}; i++)); do
+          abbreviated_path+="${path_parts[i]:0:1}/"
+        done
+        
+        # Add the full name of the final directory
+        if [[ ${#path_parts[@]} -gt 0 ]]; then
+          abbreviated_path+="${path_parts[-1]}"
+        fi
+        
+        echo "${repo_name}:${worktree_name}/${abbreviated_path}"
+      else
+        echo "${repo_name}:${worktree_name}"
+      fi
+    else
+      echo "$(basename $(pwd))"
+    fi
+  else
+    echo "$(basename $(pwd))"
+  fi
+}
+
+# Override the robbyrussell theme prompt
+PROMPT='$(git_worktree_prompt) %{$fg[green]%}$(git_prompt_info)%{$reset_color%} $ '
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"

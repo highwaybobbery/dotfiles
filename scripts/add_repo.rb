@@ -134,24 +134,25 @@ class RepoManager
 
   def handle_workspace_update(repo_name, current_branch, default_branch, owner)
     repo_dir = File.join(@projects_directory, owner, repo_name)
-    default_dir = File.join(repo_dir, "trees", "default")
+    current_branch_dir = File.join(repo_dir, current_branch)
+    default_branch_dir = File.join(repo_dir, default_branch)
     
     if Dir.exist?(repo_dir)
       puts "Updating worktree checkout..."
       
-      if Dir.exist?(default_dir)
-        # Switch the default worktree to the new default branch
+      if Dir.exist?(current_branch_dir)
+        # Switch the worktree to the new default branch
         Dir.chdir(repo_dir) do
           # Remove old worktree
-          system('git', 'worktree', 'remove', default_dir)
+          system('git', 'worktree', 'remove', current_branch_dir)
           
           # Add new worktree for new default branch
-          system('git', 'worktree', 'add', default_dir, default_branch)
+          system('git', 'worktree', 'add', default_branch_dir, default_branch)
         end
         
-        puts "Updated default worktree to use #{default_branch}"
+        puts "Updated worktree from #{current_branch} to #{default_branch}"
       else
-        puts "Default worktree directory doesn't exist"
+        puts "Current branch worktree directory doesn't exist"
       end
     end
   end
@@ -172,7 +173,7 @@ class RepoManager
 
   def prompt_for_clone(owner, repo_name, default_branch)
     puts ""
-    print "Do you want to clone #{owner}/#{repo_name} to #{@projects_directory}/#{owner}/#{repo_name}/trees/default? (Y/N): "
+    print "Do you want to clone #{owner}/#{repo_name} to #{@projects_directory}/#{owner}/#{repo_name}/#{default_branch}? (Y/N): "
     response = STDIN.gets.chomp
     
     if response.match?(/^[Yy]/)

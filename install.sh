@@ -94,43 +94,43 @@ fi
 echo "Setting up repository workspaces..."
 
 # Parse repos.yml and clone each repository using Ruby script
-if [ -f "$HOME/Environment/repos.yml" ]; then
-    echo "Processing repositories from repos.yml..."
-    
-    # Use Ruby to parse YAML and extract repository list
-    ruby -e "
-        require 'yaml'
-        
-        repos_file = File.expand_path('~/Environment/repos.yml')
-        if File.exist?(repos_file)
-            repos = YAML.load_file(repos_file)
-            if repos && repos['owners']
-                repos['owners'].each do |owner, repos_hash|
-                    next unless repos_hash
-                    repos_hash.each do |repo_name, _|
-                        puts \"#{owner}/#{repo_name}\"
-                    end
-                end
-            end
-        end
-    " | while read owner_repo; do
-        if [ -n "$owner_repo" ]; then
-            owner=$(echo "$owner_repo" | cut -d'/' -f1)
-            repo_name=$(echo "$owner_repo" | cut -d'/' -f2)
-            echo "Checking workspace for $owner_repo..."
-            
-            # Check if repository already exists
-            if [ ! -d "${HOME}/Projects/${owner}/${repo_name}/trees/default" ]; then
-                echo "Setting up repository for $owner_repo..."
-                "$PWD/scripts/clone_project.rb" "$owner_repo" || echo "Failed to clone $owner_repo (may not exist yet)"
-            else
-                echo "Repository for $owner_repo already exists"
-            fi
-        fi
-    done
-else
-    echo "repos.yml not found, skipping repository setup"
-fi
+# if [ -f "$HOME/Environment/repos.yml" ]; then
+#     echo "Processing repositories from repos.yml..."
+#
+#     # Use Ruby to parse YAML and extract repository list
+#     ruby -e "
+#         require 'yaml'
+#
+#         repos_file = File.expand_path('~/Environment/repos.yml')
+#         if File.exist?(repos_file)
+#             repos = YAML.load_file(repos_file)
+#             if repos && repos['owners']
+#                 repos['owners'].each do |owner, repos_hash|
+#                     next unless repos_hash
+#                     repos_hash.each do |repo_name, _|
+#                         puts \"#{owner}/#{repo_name}\"
+#                     end
+#                 end
+#             end
+#         end
+#     " | while read owner_repo; do
+#         if [ -n "$owner_repo" ]; then
+#             owner=$(echo "$owner_repo" | cut -d'/' -f1)
+#             repo_name=$(echo "$owner_repo" | cut -d'/' -f2)
+#             echo "Checking workspace for $owner_repo..."
+#
+#             # Check if repository already exists
+#             if [ ! -d "${HOME}/Projects/${owner}/${repo_name}/trees/default" ]; then
+#                 echo "Setting up repository for $owner_repo..."
+#                 "$PWD/scripts/clone_project.rb" "$owner_repo" || echo "Failed to clone $owner_repo (may not exist yet)"
+#             else
+#                 echo "Repository for $owner_repo already exists"
+#             fi
+#         fi
+#     done
+# else
+#     echo "repos.yml not found, skipping repository setup"
+# fi
 
 echo ""
 echo "Development environment setup complete!"
