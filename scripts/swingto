@@ -103,19 +103,33 @@ class SwingTo
     $stdout.puts "\nAvailable worktrees:"
     $stdout.puts "==================="
     
+    # Group worktrees by owner and repository
+    grouped = worktrees.group_by { |w| [w[:owner], w[:repo]] }
+    
+    index = 1
     current_owner = nil
-    worktrees.each_with_index do |worktree, index|
+    
+    grouped.keys.sort.each do |owner, repo|
       # Print owner header if it's a new owner
-      if worktree[:owner] != current_owner
+      if owner != current_owner
         $stdout.puts unless current_owner.nil?
-        $stdout.puts "#{worktree[:owner].upcase}:"
-        current_owner = worktree[:owner]
+        $stdout.puts "#{owner.upcase}:"
+        current_owner = owner
       end
       
-      $stdout.printf "%3d) %s/%s\n", index + 1, worktree[:repo], worktree[:worktree]
+      # Print repository header
+      $stdout.puts "  #{repo}:"
+      
+      # Print worktrees for this repository
+      grouped[[owner, repo]].sort_by { |w| w[:worktree] }.each do |worktree|
+        $stdout.printf "    %2d) %s\n", index, worktree[:worktree]
+        worktree[:display_index] = index
+        index += 1
+      end
+      $stdout.puts
     end
     
-    $stdout.puts "\nSelect a worktree (1-#{worktrees.length}, or 'q' to quit):"
+    $stdout.puts "Select a worktree (1-#{worktrees.length}, or 'q' to quit):"
     $stdout.flush
     
     loop do
@@ -135,8 +149,10 @@ class SwingTo
         exit 0
       when /^\d+$/
         selection = input.to_i
-        if selection >= 1 && selection <= worktrees.length
-          return worktrees[selection - 1]
+        selected_worktree = worktrees.find { |w| w[:display_index] == selection }
+        
+        if selected_worktree
+          return selected_worktree
         else
           $stdout.puts "Invalid selection. Please enter a number between 1 and #{worktrees.length}."
         end
