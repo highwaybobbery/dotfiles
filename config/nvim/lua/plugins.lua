@@ -45,6 +45,12 @@ return {
           neotree = true,
           which_key = true,
         },
+        custom_highlights = function(colors)
+          return {
+            -- Subtle colorcolumn that's just slightly off from background
+            ColorColumn = { bg = colors.mantle }, -- mantle is one shade darker than base in both themes
+          }
+        end,
       })
     end
   },
@@ -162,6 +168,31 @@ return {
     'tpope/vim-fugitive',
     lazy = false,
   },
+  {
+    "lewis6991/gitsigns.nvim",
+    opts = {
+      signs = {
+        add = { text = "+" },
+        change = { text = "~" },
+        delete = { text = "_" },
+        topdelete = { text = "‾" },
+        changedelete = { text = "~" },
+      },
+    },
+  },
+  {
+    "sindrets/diffview.nvim",
+    opts = {
+      diff_binaries = false,
+      use_icons = true,
+      show_help_hints = false,
+      view = {
+        merge_tool = {
+          layout = "diff3_mixed",
+        },
+      },
+    },
+  },
   -- { 'tpope/vim-rails' },
   -- { 'tpope/vim-dispatch' },
   { 'echasnovski/mini.surround', version = '*' },
@@ -221,6 +252,7 @@ return {
       --- read this: https://github.com/VonHeikemen/lsp-zero.nvim/blob/v3.x/doc/md/guide/integrate-with-mason-nvim.md
       require('mason').setup({})
       require('mason-lspconfig').setup({
+        ensure_installed = { 'ruby_lsp', 'ts_ls', 'lua_ls' },
         handlers = {
           function(server_name)
             require('lspconfig')[server_name].setup({})

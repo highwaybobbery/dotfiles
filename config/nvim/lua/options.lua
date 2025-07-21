@@ -13,7 +13,7 @@ local Options = {
 
     vim.opt.backspace = '2'
     vim.opt.backup = false
-    vim.opt.colorcolumn = '80'
+    vim.opt.colorcolumn = '120'
     vim.opt.expandtab = true
     vim.opt.nu = true
     vim.opt.number = true

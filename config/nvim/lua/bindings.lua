@@ -44,7 +44,25 @@ local Bindings = {
     -- LSP
     vim.keymap.set('n', '<leader>kh', vim.lsp.buf.hover, {desc="LSP Hover" })
     vim.keymap.set('n', '<leader>ka', vim.lsp.buf.code_action, { desc="LSP Code Actions" })
-    vim.keymap.set('n', '<leader>ki', vim.lsp.buf.implementation, { desc="LSP Implementation" })
+    vim.keymap.set('n', '<leader>ki', function()
+      -- Try implementation first, fallback to definition if not supported
+      local clients = vim.lsp.get_active_clients()
+      local implementation_supported = false
+      
+      for _, client in pairs(clients) do
+        if client.server_capabilities.implementationProvider then
+          implementation_supported = true
+          break
+        end
+      end
+      
+      if implementation_supported then
+        vim.lsp.buf.implementation()
+      else
+        -- Fallback to definition for Ruby and other languages that don't support implementation
+        vim.lsp.buf.definition()
+      end
+    end, { desc="LSP Implementation (fallback to definition)" })
     vim.keymap.set('n', '<leader>kci', vim.lsp.buf.incoming_calls, { desc="LSP Incoming Calls"})
     vim.keymap.set('n', '<leader>kco', vim.lsp.buf.outgoing_calls, { desc="LSP Outgoing Calls" })
     vim.keymap.set('n', '<leader>krf', vim.lsp.buf.references, { desc="LSP References" })
@@ -66,6 +84,31 @@ local Bindings = {
     vim.api.nvim_set_keymap("n", "<leader>ge", ":Gedit<cr>", {silent = true})
     vim.api.nvim_set_keymap("n", "<leader>gw", ":Gwrite<cr>", {silent = true})
     vim.api.nvim_set_keymap("n", "<leader>gf", ":Commits<cr>", {silent = true})
+    
+    -- diffview
+    vim.api.nvim_set_keymap("n", "<leader>dv", ":DiffviewOpen<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>dc", ":DiffviewClose<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>dt", ":DiffviewToggleFiles<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>df", ":DiffviewFocusFiles<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>dh", ":DiffviewFileHistory<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>dH", ":DiffviewFileHistory %<cr>", {silent = true})
+    
+    -- gitsigns
+    vim.api.nvim_set_keymap("n", "<leader>hp", ":Gitsigns preview_hunk<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>hs", ":Gitsigns stage_hunk<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>hr", ":Gitsigns reset_hunk<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>hb", ":Gitsigns blame_line<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "<leader>hd", ":Gitsigns toggle_deleted<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "]c", ":Gitsigns next_hunk<cr>", {silent = true})
+    vim.api.nvim_set_keymap("n", "[c", ":Gitsigns prev_hunk<cr>", {silent = true})
+    
+    -- diagnostics
+    vim.keymap.set('n', '<leader>kt', function()
+      vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+    end, { desc = "Toggle Diagnostics" })
+    vim.keymap.set('n', '<leader>kd', vim.diagnostic.open_float, { desc = "Show Diagnostic Details" })
+    vim.keymap.set('n', '<leader>kn', vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
+    vim.keymap.set('n', '<leader>kp', vim.diagnostic.goto_prev, { desc = "Previous Diagnostic" })
   end
 }
 return Bindings
