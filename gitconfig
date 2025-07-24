@@ -35,3 +35,6 @@
   logtopcommits = log --oneline -n 20
   logmasterdiff = log origin/master.. --oneline
   logmaindiff = log origin/main.. --oneline
+	head = show HEAD
+	headfiles = show HEAD --name-status
+	setupstream = "!git branch --set-upstream-to=origin/$(git branch --show-current) $(git branch --show-current)"

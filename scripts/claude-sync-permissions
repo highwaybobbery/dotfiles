@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+def error_exit(message)
+  puts "Error: #{message}"
+  exit 1
+end
+
+def get_git_worktree_info
+  # Check if we're in a git repository
+  unless system('git rev-parse --git-dir > /dev/null 2>&1')
+    error_exit "Not in a git repository"
+  end
+
+  # Get the main worktree path
+  main_worktree = `git worktree list --porcelain | grep '^worktree' | head -1 | cut -d' ' -f2-`.strip
+  error_exit "Unable to determine main worktree" if main_worktree.empty?
+
+  # Get current worktree path
+  current_worktree = `git rev-parse --show-toplevel`.strip
+  error_exit "Unable to determine current worktree" if current_worktree.empty?
+
+  # Check if we're in a worktree (not the main repo)
+  worktree_list = `git worktree list --porcelain`
+  current_is_worktree = worktree_list.lines.any? do |line|
+    line.start_with?('worktree ') && line.strip.split(' ', 2)[1] == current_worktree && 
+    worktree_list.lines.index(line) > 0
+  end
+
+  error_exit "Not in a git worktree" unless current_is_worktree
+
+  [main_worktree, current_worktree]
+end
+
+def prompt_user(message)
+  print "#{message} (y/N): "
+  response = gets.chomp.downcase
+  response == 'y' || response == 'yes'
+end
+
+def copy_claude_settings
+  main_worktree, current_worktree = get_git_worktree_info
+
+  source_claude_dir = File.join(main_worktree, '.claude')
+  target_claude_dir = File.join(current_worktree, '.claude')
+  
+  source_settings = File.join(source_claude_dir, 'settings.local.json')
+  target_settings = File.join(target_claude_dir, 'settings.local.json')
+
+  # Check if source file exists
+  error_exit "No local permissions file found in main worktree: #{source_settings}" unless File.exist?(source_settings)
+
+  puts "Source: #{source_settings}"
+  puts "Target: #{target_settings}"
+  
+  # Check if target file exists and prompt for overwrite
+  if File.exist?(target_settings)
+    puts "\nTarget file already exists."
+    puts "Source content preview:"
+    puts File.read(source_settings).lines.first(5).join
+    puts "..."
+    puts "\nTarget content preview:"
+    puts File.read(target_settings).lines.first(5).join
+    puts "..."
+    
+    unless prompt_user("\nOverwrite existing target file?")
+      puts "Operation cancelled."
+      exit 0
+    end
+  end
+
+  # Create target directory if it doesn't exist
+  FileUtils.mkdir_p(target_claude_dir)
+  
+  # Copy the file
+  FileUtils.cp(source_settings, target_settings)
+  puts "Successfully copied Claude settings to current worktree."
+end
+
+copy_claude_settings

@@ -19,6 +19,7 @@ This repository contains:
 │   ├── clone_project.rb # Clone repositories into bare repo structure
 │   ├── install_repos.rb # Install all repositories from repos.yml
 │   └── theme-switcher   # Theme switching for Alacritty, tmux, Neovim
+├── commands/             # Claude Code slash commands
 ├── bin/                 # Symlinked executables
 │   └── theme-switcher   # Theme switcher symlink
 ├── config/              # Configuration files for various tools
@@ -45,6 +46,10 @@ This repository contains:
 ### Repository Management
 
 The `scripts/` directory contains Ruby utilities for managing repositories across multiple organizations:
+
+### Claude Code Commands
+
+The `commands/` directory contains Claude Code slash commands that are automatically symlinked to `~/.claude/commands/` during installation. This allows for creating reusable, version-controlled command templates for common workflows. Commands in this directory should be prefixed with `ab_` to namespace them as personal general-purpose commands.
 
 #### add_repo.rb
 Adds repositories to the tracking system and optionally clones them.
@@ -358,6 +363,10 @@ Place new Ruby scripts in the `scripts/` directory and make them executable:
 ```bash
 chmod +x scripts/new_script.rb
 ```
+
+## Documentation
+
+- [Claude Permissions Sync Enhancement](docs/claude-sync-permissions-enhancement.md) - Detailed specification for enhancing the claude-sync-permissions script
 
 ## Requirements
 

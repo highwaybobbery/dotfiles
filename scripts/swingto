@@ -11,6 +11,9 @@ class SwingTo
   def initialize
     @projects_dir = File.expand_path('~/Projects')
     @repos_config = load_repos_config
+    @repo_filter = nil
+    @branch_filter = nil
+    @branch_filter_failed = false
   end
 
   def run
@@ -18,11 +21,27 @@ class SwingTo
     worktrees = discover_worktrees
     
     if worktrees.empty?
-      puts "No worktrees found in #{@projects_dir}"
+      if @repo_filter && @branch_filter
+        puts "No worktrees found for repo '#{@repo_filter}' with branch '#{@branch_filter}' in #{@projects_dir}"
+      elsif @repo_filter
+        puts "No worktrees found for repo '#{@repo_filter}' in #{@projects_dir}"
+      elsif @branch_filter
+        puts "No worktrees found with branch '#{@branch_filter}' in #{@projects_dir}"
+      else
+        puts "No worktrees found in #{@projects_dir}"
+      end
       exit 1
     end
 
-    selected_worktree = prompt_for_selection(worktrees)
+    if worktrees.length == 1 && !@branch_filter_failed
+      selected_worktree = worktrees.first
+      puts "Auto-selecting only option: #{selected_worktree[:display_name]}"
+    else
+      if @branch_filter_failed
+        puts "Branch filter '#{@branch_filter}' didn't match. Showing all branches for matching repo(s):"
+      end
+      selected_worktree = prompt_for_selection(worktrees)
+    end
     change_directory(selected_worktree)
   end
 
@@ -37,11 +56,43 @@ class SwingTo
     YAML.load_file(config_file)
   end
 
+  def fuzzy_match?(repo_name, filter)
+    # Exact match
+    return true if repo_name == filter
+    
+    # Case-insensitive exact match
+    return true if repo_name.downcase == filter.downcase
+    
+    # Remove common separators and check if filter matches
+    normalized_repo = repo_name.downcase.gsub(/[-_\s]/, '')
+    normalized_filter = filter.downcase.gsub(/[-_\s]/, '')
+    
+    # Check if filter is contained in normalized repo name
+    return true if normalized_repo.include?(normalized_filter)
+    
+    # Check if repo name contains all characters of filter in order
+    filter_chars = normalized_filter.chars
+    repo_chars = normalized_repo.chars
+    
+    filter_index = 0
+    repo_chars.each do |char|
+      if filter_index < filter_chars.length && char == filter_chars[filter_index]
+        filter_index += 1
+      end
+    end
+    
+    filter_index == filter_chars.length
+  end
+
   def parse_options
     option_parser = OptionParser.new do |opts|
-      opts.banner = "Usage: #{$0} [options]"
+      opts.banner = "Usage: #{$0} [options] [repo_name] [branch_name]"
       opts.separator ""
       opts.separator "Interactive worktree navigation utility"
+      opts.separator ""
+      opts.separator "Arguments:"
+      opts.separator "    repo_name                    Filter to show only worktrees for the specified repository"
+      opts.separator "    branch_name                  Filter to show only worktrees matching the specified branch"
       opts.separator ""
       opts.separator "Options:"
 
@@ -53,6 +104,8 @@ class SwingTo
 
     begin
       option_parser.parse!
+      @repo_filter = ARGV[0] if ARGV.length > 0
+      @branch_filter = ARGV[1] if ARGV.length > 1
     rescue OptionParser::InvalidOption => e
       puts "Error: #{e.message}"
       puts option_parser
@@ -61,13 +114,17 @@ class SwingTo
   end
 
   def discover_worktrees
-    worktrees = []
+    all_worktrees = []
+    matching_repo_worktrees = []
     
     @repos_config['owners'].each do |owner, repos|
       owner_path = Pathname.new(@projects_dir) / owner
       next unless owner_path.exist?
 
       repos.each_key do |repo_name|
+        repo_matches = !@repo_filter || fuzzy_match?(repo_name, @repo_filter)
+        next unless repo_matches || !@repo_filter
+        
         # Check both workspace and direct structures
         [
           owner_path / "#{repo_name}-workspace",
@@ -82,21 +139,47 @@ class SwingTo
             
             # Check if it's a git worktree (has .git file or directory)
             if (potential_worktree / '.git').exist?
-              worktrees << {
+              worktree_name = potential_worktree.basename.to_s
+              
+              worktree = {
                 owner: owner,
                 repo: repo_name,
-                worktree: potential_worktree.basename.to_s,
+                worktree: worktree_name,
                 path: potential_worktree,
-                display_name: "#{owner}/#{repo_name}/#{potential_worktree.basename}"
+                display_name: "#{owner}/#{repo_name}/#{worktree_name}"
               }
+              
+              if repo_matches
+                matching_repo_worktrees << worktree
+              elsif !@repo_filter
+                all_worktrees << worktree
+              end
             end
           end
         end
       end
     end
-
-    # Sort by owner, then repo, then worktree name
-    worktrees.sort_by { |w| [w[:owner], w[:repo], w[:worktree]] }
+    
+    # Determine which worktrees to return
+    if @repo_filter
+      if @branch_filter
+        # Both repo and branch filters specified
+        branch_matches = matching_repo_worktrees.select { |w| fuzzy_match?(w[:worktree], @branch_filter) }
+        if branch_matches.empty? && !matching_repo_worktrees.empty?
+          # Repo matches but no branches match - show all branches for matching repos
+          @branch_filter_failed = true
+          matching_repo_worktrees
+        else
+          branch_matches
+        end
+      else
+        # Only repo filter specified
+        matching_repo_worktrees
+      end
+    else
+      # No filters
+      all_worktrees
+    end.sort_by { |w| [w[:owner], w[:repo], w[:worktree]] }
   end
 
   def prompt_for_selection(worktrees)
@@ -165,13 +248,10 @@ class SwingTo
   def change_directory(worktree)
     target_dir = worktree[:path].to_s
     puts "\nSelected: #{worktree[:display_name]}"
-    puts "Directory: #{target_dir}"
-    
+
     # Save selection to file for swingto-go command
     selection_file = File.expand_path('~/.swingto_selection')
     File.write(selection_file, target_dir)
-    
-    puts "\nRun 'swingto-go' to change to this directory"
   end
 end
 

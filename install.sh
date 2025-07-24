@@ -55,7 +55,44 @@ for name in *; do
   fi
 done
 
+# Create Claude configuration symlink
+echo "Setting up Claude configuration..."
+if [ ! -d "$HOME/.claude" ]; then
+    mkdir -p "$HOME/.claude"
+fi
+
+target="$HOME/.claude/CLAUDE.md"
+source="$PWD/claude_config/CLAUDE.md"
+if [ -e "$target" ]; then
+    if [ ! -L "$target" ]; then
+        echo "WARNING: $target exists but is not a symlink."
+    else
+        echo "Already Linked $target"
+    fi
+else
+    echo "Creating $target"
+    ln -s "$source" "$target"
+fi
+
 cd ..
+
+# Create ~/.claude/commands directory and symlink command files
+echo "Setting up Claude Code commands..."
+mkdir -p "$HOME/.claude/commands"
+
+for command_file in "$PWD/commands"/*.md; do
+    if [ -f "$command_file" ]; then
+        command_name=$(basename "$command_file")
+        target_link="$HOME/.claude/commands/$command_name"
+        
+        if [ -L "$target_link" ]; then
+            echo "Command $command_name symlink already exists"
+        else
+            echo "Creating symlink for command: $command_name"
+            ln -sf "$command_file" "$target_link"
+        fi
+    fi
+done
 
 echo "Dotfiles installation complete!"
 

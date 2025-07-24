@@ -1,8 +1,9 @@
 alias v="nvim"
 alias q="exit"
 alias h="cd ~/"
+alias e="cd ~/Environment"
 alias p="cd ~/Projects/"
-alias b="cd ~/Personal\ Brain/"
+alias b="cd ~/Projects/highwaybobbery/personal-brain/main"
 alias nvc="cd ~/.config/nvim && v"
 
 # srcdots cmd from zshrc, sources all dotfiles~
@@ -10,6 +11,7 @@ alias srcaliases="source ~/.aliases"
 alias :q="exit"
 alias quit="exit"
 alias dotfiles="cd ~/Projects/highwaybobbery/dotfiles/master"
+alias st="swingto"
 
 alias aliases="cat ~/.aliases ~/.aliases.local"
 alias gitaliases="cat ~/.gitconfig ~/.gitconfig.local"
@@ -42,6 +44,8 @@ alias enterspec="entrspec"
 
 alias entrsrb="find . -name '*.rb' | entr -c bin/srb"
 
+# Claude utilities
+alias claude-sync-permissions="~/Projects/highwaybobbery/dotfiles/master/scripts/claude-sync-permissions"
 
 # Include custom aliases
 [[ -f ~/.aliases.local ]] && source ~/.aliases.local

@@ -1,1 +1,4 @@
 /vim/bundle/*
+
+# Claude configuration - ignore local settings, track project documentation
+.claude/settings.local.json
